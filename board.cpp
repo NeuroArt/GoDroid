@@ -169,7 +169,7 @@ void board::showboard(){
 std::set<int>* board::getemptycells(){
 	//std::vector<int> result;
 	//result.clear();
-	//std::set<int>::iterator it;  
+	//std::set<int>::iterator it;
 	//for(it=emptycells.begin();it!=emptycells.end();it++){
 	//	result.push_back(*it);
 	//}
@@ -206,4 +206,51 @@ bool board::play(bool& player,int coordx, int coordy){
 	}
 	currentplayer = !currentplayer;
 	return true;
+}
+
+cell board::get_cell(int i, int j){
+    return goban[i][j].c;
+}
+
+void board::compute_final_status(void){
+    for(int pos = 0; pos < SIZE*SIZE; ++pos)
+        final_status[pos] = UNKNOWN;
+
+    for(int i = 1; i < SIZE+1; ++i){
+        for(int j = 1; j < SIZE+1; ++j){
+            if(get_cell(i, j) == empty){
+                for(int k = 0; k < 4; k++){
+                    int ai = i + offset_x[k];
+                    int aj = j + offset_y[k];
+                    if(get_cell(ai, aj) == border)
+                        continue;
+                    pos = POS(ai,aj);
+                    if (final_status[pos] == UNKNOWN) {
+                        if (get_board(ai, aj) != EMPTY) {
+                            if (has_additional_liberty(ai, aj, i, j))
+                                set_final_status_string(pos, ALIVE);
+                            else
+                                set_final_status_string(pos, DEAD);
+                        }
+                    }
+                    if (final_status[POS(i, j)] == UNKNOWN) {
+                        if ((final_status[pos] == ALIVE) ^ (get_board(ai, aj) == WHITE))
+                            final_status[POS(i, j)] = BLACK_TERRITORY;
+                        else
+                            final_status[POS(i, j)] = WHITE_TERRITORY;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void black_raw(){
+    int black = 0;
+    for(int pos = 0; pos < SIZE*SIZE; ++pos){
+        if(final_status[pos] = WHITE_TERRITORY || final_status[pos] = UNKNOWN) continue;
+        if(final_status[pos] = BLACK_TERRITORY){black++; continue;}
+        if((final_status[pos] == ALIVE) ^ (get_cell(I(pos), J(pos)) == WHITE)) black++;
+    }
+    return black;
 }
