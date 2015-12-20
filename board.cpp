@@ -47,6 +47,35 @@ board::~board(){
 	delete emptycells;
 }
 
+void board::clear_board(){
+	for(int i=0;i<SIZE+2;++i){
+		goban[0][i].c = border;
+		goban[14][i].c = border;
+		goban[i][0].c = border;
+		goban[i][14].c = border;
+
+		goban[0][i].liberty = 0;
+		goban[14][i].liberty = 0;
+		goban[i][0].liberty = 0;
+		goban[i][14].liberty = 0;
+
+		if (goban[1][i].liberty>0)
+			goban[1][i].liberty--;
+		if (goban[13][i].liberty>0)
+			goban[13][i].liberty--;
+		if (goban[i][1].liberty>0)
+			goban[i][1].liberty--;
+		if (goban[i][13].liberty>0)
+			goban[i][13].liberty--;
+	}
+	currentplayer = true;
+	ko_i = -1;
+	ko_j = -1;
+	emptycells->clear();
+	for (int i=1;i<=SIZE*SIZE;++i)
+		emptycells->insert(i);
+}
+
 void board::place(bool player, kaku*k){
 	k->c = player?black:white;
 	if ((k+1)->c!=border)
@@ -137,15 +166,15 @@ void board::showboard(){
 	}
 }
 
-std::vector<int> board::getemptycells(){
-	std::vector<int> result;
+std::set<int>* board::getemptycells(){
+	//std::vector<int> result;
 	//result.clear();
 	//std::set<int>::iterator it;  
 	//for(it=emptycells.begin();it!=emptycells.end();it++){
 	//	result.push_back(*it);
 	//}
 	//return result;
-	return result;
+	return emptycells;
 }
 
 bool board::play(bool& player,int coordx, int coordy){
