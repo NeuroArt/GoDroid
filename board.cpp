@@ -35,8 +35,10 @@ board::board(){
 
 board::board(const board& b){
 	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j)
-			goban[i][j] = b.goban[i][j];
+		for(int j=0;j<SIZE+2;++j){
+			goban[i][j].c = b.goban[i][j].c;
+			goban[i][j].liberty = b.goban[i][j].liberty;
+		}
 	currentplayer = b.currentplayer;
 /*	emptycells = new std::set<int>(*b.emptycells);*/
 	ko_i = b.ko_i;
@@ -48,6 +50,12 @@ board::~board(){
 }
 
 void board::clear_board(){
+	for(int i=1;i<SIZE+1;++i){
+		for(int j=1;j<SIZE+1;++j){
+			goban[i][j].c = empty;
+			goban[i][j].liberty=4;
+		}
+	}
 	for(int i=0;i<SIZE+2;++i){
 		goban[0][i].c = border;
 		goban[14][i].c = border;
@@ -92,8 +100,10 @@ void board::place(bool player, kaku*k){
 
 bool board::deathtest(kaku* k){
 	k->visited = true;
-	if(k->liberty!=0)
+	if(k->liberty!=0){
+		k->visited = false;
 		return false;
+	}
 	bool flag1=true,flag2=true,flag3=true,flag4=true;
 	if ((k+1)->c == k->c&&!(k+1)->visited)
 		flag1 = deathtest(k+1);
@@ -177,46 +187,11 @@ void board::showboard(){
 // 	return emptycells;
 // }
 
-bool board::play(bool& player,int coordx, int coordy){
-	kaku* target = &goban[coordx][coordy];
-	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
-	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
-		return false;
-	}
-	bool flag = false; //flag indicates has any enemy been eliminated.
-	cell enemy = player?white:black;
-	place(player,target);
-	int total = 0;
-	if ((target+1)->c==enemy&&deathtest(target+1))
-		killall(target+1,enemy,total);
-	if ((target-1)->c==enemy&&deathtest(target-1))
-		killall(target-1,enemy,total);
-	if ((target+SIZE+2)->c==enemy&&deathtest(target+SIZE+2))
-		killall(target+SIZE+2,enemy,total);
-	if ((target-(SIZE+2))->c==enemy&&deathtest(target-(SIZE+2)))
-		killall(target-(SIZE+2),enemy,total);
-	if (total != 1){
-		ko_i = -1;
-		ko_j = -1;
-	}
-	//printf("%d %d %d\n",total,ko_i,ko_j);
-	if (deathtest(target)){
-		kill(target);
-		return false;
-	}
-	currentplayer = !currentplayer;
-	return true;
-}
-
 cell board::get_cell(int i, int j){
     return goban[i][j].c;
 }
 
-<<<<<<< HEAD
 void board::compute_final_status(){
-=======
-void board::compute_final_status(void){
->>>>>>> origin/QianyangPeng's_branch
     for(int pos = 0; pos < SIZE*SIZE; ++pos)
         final_status[pos] = UNKNOWN;
 
@@ -257,4 +232,49 @@ int board::black_raw(){
         if((final_status[pos] == ALIVE) ^ (get_cell(I(pos), J(pos)) == white)) black++;
     }
     return black;
+}
+
+int board::judge(){
+	int b=0;
+	int w=0;
+	for(int i=1;i<SIZE+1;++i){
+		for(int j=1;j<SIZE+1;++j){
+			if (goban[i][j].c == black)
+				b++;
+			if (goban[i][j].c == white)
+				w++;
+		}
+	}
+	return b-w;
+}
+
+bool board::play(bool& player,int coordx, int coordy){
+	kaku* target = &goban[coordx][coordy];
+	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
+	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
+		return false;
+	}
+	bool flag = false; //flag indicates has any enemy been eliminated.
+	cell enemy = player?white:black;
+	place(player,target);
+	int total = 0;
+	if ((target+1)->c==enemy&&deathtest(target+1))
+		killall(target+1,enemy,total);
+	if ((target-1)->c==enemy&&deathtest(target-1))
+		killall(target-1,enemy,total);
+	if ((target+SIZE+2)->c==enemy&&deathtest(target+SIZE+2))
+		killall(target+SIZE+2,enemy,total);
+	if ((target-(SIZE+2))->c==enemy&&deathtest(target-(SIZE+2)))
+		killall(target-(SIZE+2),enemy,total);
+	if (total != 1){
+		ko_i = -1;
+		ko_j = -1;
+	}
+	//printf("%d %d %d\n",total,ko_i,ko_j);
+	if (deathtest(target)){
+		kill(target);
+		return false;
+	}
+	currentplayer = !currentplayer;
+	return true;
 }
