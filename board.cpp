@@ -166,6 +166,7 @@ void board::showboard(){
 	}
 }
 
+<<<<<<< HEAD
 // std::set<int>* board::getemptycells(){
 // 	//std::vector<int> result;
 // 	//result.clear();
@@ -176,6 +177,18 @@ void board::showboard(){
 // 	//return result;
 // 	return emptycells;
 // }
+=======
+std::set<int>* board::getemptycells(){
+	//std::vector<int> result;
+	//result.clear();
+	//std::set<int>::iterator it;
+	//for(it=emptycells.begin();it!=emptycells.end();it++){
+	//	result.push_back(*it);
+	//}
+	//return result;
+	return emptycells;
+}
+>>>>>>> origin/QianyangPeng's_branch
 
 bool board::play(bool& player,int coordx, int coordy){
 	kaku* target = &goban[coordx][coordy];
@@ -212,7 +225,11 @@ cell board::get_cell(int i, int j){
     return goban[i][j].c;
 }
 
+<<<<<<< HEAD
 void board::compute_final_status(){
+=======
+void board::compute_final_status(void){
+>>>>>>> origin/QianyangPeng's_branch
     for(int pos = 0; pos < SIZE*SIZE; ++pos)
         final_status[pos] = UNKNOWN;
 
