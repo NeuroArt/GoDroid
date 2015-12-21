@@ -1,6 +1,6 @@
 #include "board.h"
 
-board::board(std::set<int> *es){
+board::board(){
 	for(int i=0;i<SIZE+2;++i){
 		goban[0][i].c = border;
 		goban[14][i].c = border;
@@ -24,13 +24,13 @@ board::board(std::set<int> *es){
 	currentplayer = true;
 	ko_i = -1;
 	ko_j = -1;
-	if (es==NULL){
-		emptycells = new std::set<int>;
-		for (int i=1;i<=SIZE*SIZE;++i)
-			emptycells->insert(i);
-	}
-	else
-		emptycells = new std::set<int>(*es);
+// 	if (es==NULL){
+// 		emptycells = new std::set<int>;
+// 		for (int i=1;i<=SIZE*SIZE;++i)
+// 			emptycells->insert(i);
+// 	}
+// 	else
+// 		emptycells = new std::set<int>(*es);
 }
 
 board::board(const board& b){
@@ -38,13 +38,13 @@ board::board(const board& b){
 		for(int j=0;j<SIZE+2;++j)
 			goban[i][j] = b.goban[i][j];
 	currentplayer = b.currentplayer;
-	emptycells = new std::set<int>(*b.emptycells);
+/*	emptycells = new std::set<int>(*b.emptycells);*/
 	ko_i = b.ko_i;
 	ko_j = b.ko_j;
 }
 
 board::~board(){
-	delete emptycells;
+/*	delete emptycells;*/
 }
 
 void board::clear_board(){
@@ -71,9 +71,9 @@ void board::clear_board(){
 	currentplayer = true;
 	ko_i = -1;
 	ko_j = -1;
-	emptycells->clear();
-	for (int i=1;i<=SIZE*SIZE;++i)
-		emptycells->insert(i);
+/*	emptycells->clear();*/
+// 	for (int i=1;i<=SIZE*SIZE;++i)
+// 		emptycells->insert(i);
 }
 
 void board::place(bool player, kaku*k){
@@ -86,7 +86,7 @@ void board::place(bool player, kaku*k){
 		(k+SIZE+2)->liberty --;
 	if ((k-(SIZE+2))->c!=border)
 		(k-(SIZE+2))->liberty --;
-	emptycells->erase(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
+/*	emptycells->erase(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
 
@@ -117,7 +117,7 @@ void board::kill(kaku* k){
 		(k+SIZE+2)->liberty ++;
 	if ((k-(SIZE+2))->c!=border)
 		(k-(SIZE+2))->liberty ++;
-	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
+/*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
 
@@ -126,7 +126,7 @@ void board::killall(kaku* k, cell state,int &total){
 	total += 1;
 	ko_i = (k-&goban[0][0])/(SIZE+2);
 	ko_j = (k-&goban[0][0])%(SIZE+2);
-	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
+/*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 	if ((k+1)->c!=border)
 		(k+1)->liberty ++;
@@ -166,16 +166,16 @@ void board::showboard(){
 	}
 }
 
-std::set<int>* board::getemptycells(){
-	//std::vector<int> result;
-	//result.clear();
-	//std::set<int>::iterator it;  
-	//for(it=emptycells.begin();it!=emptycells.end();it++){
-	//	result.push_back(*it);
-	//}
-	//return result;
-	return emptycells;
-}
+// std::set<int>* board::getemptycells(){
+// 	//std::vector<int> result;
+// 	//result.clear();
+// 	//std::set<int>::iterator it;
+// 	//for(it=emptycells.begin();it!=emptycells.end();it++){
+// 	//	result.push_back(*it);
+// 	//}
+// 	//return result;
+// 	return emptycells;
+// }
 
 bool board::play(bool& player,int coordx, int coordy){
 	kaku* target = &goban[coordx][coordy];
@@ -206,4 +206,3 @@ bool board::play(bool& player,int coordx, int coordy){
 	}
 	currentplayer = !currentplayer;
 	return true;
-}
