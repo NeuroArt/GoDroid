@@ -82,6 +82,7 @@ public:
         //需要棋串，(i,j)所在的棋串除(libi,libj)外是否还有其他的气
     int black_raw();//贴目前黑的总子数
 	void showboard();
+	int judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
 	bool getcurrentplayer(){return currentplayer;}
 	//std::set<int>* getemptycells(); //function cancelled
 	bool play(bool& player,int coordx, int coordy);
