@@ -224,9 +224,9 @@ void board::compute_final_status(void){
                     int aj = j + offset_y[k];
                     if(get_cell(ai, aj) == border)
                         continue;
-                    pos = POS(ai,aj);
+                    int pos = POS(ai,aj);
                     if (final_status[pos] == UNKNOWN) {
-                        if (get_board(ai, aj) != EMPTY) {
+                        if (get_cell(ai, aj) != empty) {
                             if (has_additional_liberty(ai, aj, i, j))
                                 set_final_status_string(pos, ALIVE);
                             else
@@ -234,7 +234,7 @@ void board::compute_final_status(void){
                         }
                     }
                     if (final_status[POS(i, j)] == UNKNOWN) {
-                        if ((final_status[pos] == ALIVE) ^ (get_board(ai, aj) == WHITE))
+						if ((final_status[pos] == ALIVE) ^ (get_cell(ai, aj) == white))
                             final_status[POS(i, j)] = BLACK_TERRITORY;
                         else
                             final_status[POS(i, j)] = WHITE_TERRITORY;
@@ -245,12 +245,12 @@ void board::compute_final_status(void){
     }
 }
 
-void black_raw(){
+int board::black_raw(){
     int black = 0;
     for(int pos = 0; pos < SIZE*SIZE; ++pos){
-        if(final_status[pos] = WHITE_TERRITORY || final_status[pos] = UNKNOWN) continue;
-        if(final_status[pos] = BLACK_TERRITORY){black++; continue;}
-        if((final_status[pos] == ALIVE) ^ (get_cell(I(pos), J(pos)) == WHITE)) black++;
+        if(final_status[pos] == WHITE_TERRITORY || final_status[pos] == UNKNOWN) continue;
+        if(final_status[pos] == BLACK_TERRITORY){black++; continue;}
+        if((final_status[pos] == ALIVE) ^ (get_cell(I(pos), J(pos)) == white)) black++;
     }
     return black;
 }
