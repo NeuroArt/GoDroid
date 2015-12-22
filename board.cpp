@@ -254,3 +254,14 @@ int board::black_raw(){
     }
     return black;
 }
+
+int board::board_empty()
+{
+  int i;
+  for (i = 0; i < SIZE * SIZE; i++)
+	  if (goban[I(i)][J(i)].c != empty)
+      return 0;
+
+  return 1;
+}
+

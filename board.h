@@ -4,9 +4,6 @@
 #include <iostream>
 #include <set>
 #define SIZE 13
-#define PROTOCOL_VERSION "2"
-#define NAME "Neuroart"
-#define VERSION "0.01"
 
 #define DEAD 0
 #define ALIVE 1
@@ -14,6 +11,8 @@
 #define WHITE_TERRITORY 3
 #define BLACK_TERRITORY 4
 #define UNKNOWN 5
+
+extern float komi;
 
 #define POS(i, j) ((i-1) * board_size + (j-1))
 #define I(pos) (((pos) / board_size) + 1)
@@ -24,8 +23,8 @@ static int offset_y[4] = {0, 0, -1, 1};
 
 enum cell{
 	empty = 0, //0
-	black,     //1
-	white,   //2
+	white,   //1
+	black,     //2
 	border  //3
 };
 
@@ -61,22 +60,12 @@ public:
 	board(std::set<int> *es=NULL);
 	board(const board& b);
 	~board();
-	char* get_protocol_version(){return PROTOCOL_VERSION;}
-	char* get_name(){return NAME;}
-	char* get_version(){return VERSION;}
-	void get_known_command(); //未实现，返回类型未确定
-	void quit(); //未实现，返回类型未确定
 	int get_boardsize(){return board_size;}
 	cell get_cell(int i, int j);
+	int board_empty();
 	void clear_board();
-	void get_komi(); //未实现，返回类型未确定
-	void get_fixed_handicap(); //未实现，返回类型未确定
-	void place_free_handicap(); //未实现，返回类型未确定
-	void set_free_handicap(); //未实现，返回类型未确定
-	void genmove(); //未实现，返回类型未确定
-	void final_score(); //未实现，返回类型未确定
-	void final_status_list(); //未实现，返回类型未确定
 	void compute_final_status();
+	int suicide(int i, int j, int color);//string needed
 	void set_final_status_string(int pos, int status);//需要棋串
 	int has_additional_liberty(int i, int j, int libi, int libj);
         //需要棋串，(i,j)所在的棋串除(libi,libj)外是否还有其他的气
