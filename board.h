@@ -81,6 +81,8 @@ public:
 	bool getcurrentplayer(){return currentplayer;}
 	//std::set<int>* getemptycells(); //function cancelled
 	bool play(bool& player,int coordx, int coordy);
+
+	board& operator=(const board& x);
 };
 
 #endif
