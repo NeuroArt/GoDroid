@@ -4,36 +4,47 @@
 #include <ctime>
 using namespace std;
 #include "board.h"
+#include "UCT.h"
+#define MAXINT 32767
 
 int main(){
 	clock_t start,finish;
-	start = clock();
+	
 	srand(time(NULL));
 	//srand((unsigned)time(NULL));
 // 	set<int> *es = new set<int>;
 // 	for (int i=1;i<=SIZE*SIZE;++i)
 // 		es->insert(i);
-	board b;
-	for (int t=0;t<100000;++t){
-		b.clear_board();
-		//b.showboard();
-		int position1,position2;
-		int fail=0;
-		while(fail<300){
-			bool flag = b.getcurrentplayer();
-			position1 = rand()%13+1;
-			position2 = rand()%13+1;
-			if(b.play(flag, position1, position2)){ //如果play不合法的点会返回false
-
-			}
-			else
-				fail++;
+	board b;//全局唯一的board
+	int fail = 0;
+	for(int i = 0; i < 200; ++i){
+		
+		UCT tree(b);//当前board下新建UCT树
+		start = clock();
+		finish = clock();
+		int cnt = 0;
+		while (finish - start < 2000){ //一直模拟到2秒钟
+			tree.playOneSequenceInMoGo();
+			finish = clock();
+			cnt++;
 		}
+		printf("cnt: %d\n", cnt);
+		int move = tree.getNextMove();//获得模拟出的最佳下一步
+		int positionX = move / SIZE + 1;
+		int positionY = move % SIZE + 1;
+		bool flag = b.getcurrentplayer();
+		printf("The next move is %d, %d\n", positionX, positionY);
+		if (b.play(flag, positionX, positionY)){//玩它
+
+		}
+		else
+			fail++;
+		printf("fail: %d\n", fail);
+		finish = clock();
+		cout << finish - start << endl;
 		b.showboard();
-		printf("黑棋比白棋多%d\n",b.judge());
-		system("pause");
 	}
-	finish = clock();
-	cout << finish-start<<endl;
+	
+	printf("黑棋比白棋多%d\n",b.judge());
 	system("pause");
 }

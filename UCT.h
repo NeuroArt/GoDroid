@@ -1,7 +1,9 @@
 #ifndef _UCT_H
 #define _UCT_H
 #include <math.h>
-#include "testBoard.h"
+#include <string.h>
+#include <stack>
+#include "board.h"
 #include "montecarlo.h"
 #define largeFloat 1000000000000.0
 
@@ -13,16 +15,20 @@ private:
 			return float(win) / total;
 		}
 		Node *parent, *lchild, *sibling;
-		board currentBoard;
+		//board currentBoard;
+		int move;
+		bool player;
 		char color;
 
-		Node(board inBoard) {
+		Node() {
 			win = 0;
 			total = 0;
 			parent = NULL;
 			lchild = NULL;
 			sibling = NULL;
-			currentBoard = inBoard;
+			player = 1;
+			move = 0;
+			//currentBoard = inBoard;
 		}
 		//explore_coeff = 2 * ln(Total Simulations)
 		float getUCBValue(float explore_coeff) {
@@ -41,14 +47,14 @@ private:
 			}
 		}
 		void removeChild(Node *delChild) {
-			if(lchild == delChild) {
+			if (lchild == delChild) {
 				lchild = lchild->sibling;
 				return;
 			}
 			Node *actChild;
 			actChild = lchild;
-			while(actChild->sibling != NULL) {
-				if(actChild->sibling == delChild) {
+			while (actChild->sibling != NULL) {
+				if (actChild->sibling == delChild) {
 					actChild->sibling = actChild->sibling->sibling;
 					return;
 				}
@@ -56,10 +62,10 @@ private:
 			}
 		}
 		void freeSubtree(Node *p) {
-			if(p == NULL) return;
+			if (p == NULL) return;
 			p = p->lchild;
 			Node *tmp;
-			while(p != NULL) {
+			while (p != NULL) {
 				freeSubtree(p);
 				tmp = p;
 				p = p->sibling;
@@ -77,9 +83,9 @@ private:
 			if (lchild == NULL) return 1;
 			return 0;
 		}
-/*		char oppositeColor() {
-			if(color == 'B') return 'W';
-			else return 'B';
+		/*		char oppositeColor() {
+		if(color == 'B') return 'W';
+		else return 'B';
 		}*/
 		Node* findBestChild() {
 			Node* bestChild = NULL;
@@ -101,40 +107,85 @@ private:
 			float worstUrgency = largeFloat;
 			float explore_coeff = 2 * log(total);
 			Node *p = lchild;
-			while(p != NULL) {
+			while (p != NULL) {
 				float childUrgency = p->getUCBValue(explore_coeff);
-				if(childUrgency < worstUrgency) {
+				if (childUrgency < worstUrgency) {
 					worstUrgency = childUrgency;
 					worstChild = p;
 				}
 				p = p->sibling;
 			}
-			if(worstChild == lchild && worstChild->sibling = NULL) return 0;
+			if (worstChild == lchild && worstChild->sibling == NULL) return 0;
 			removeChild(worstChild);
 			freeSubtree(worstChild);
 			delete worstChild;
 		}
 	};
 	Node *root;
+	board rootBoard;
 public:
-	UCT(board inBoard, char startColor) {
-		root = new Node(inBoard);
+	UCT(board inBoard) {
+		root = new Node;
+		rootBoard = inBoard;
+	}
+	~UCT() {
+		root->freeSubtree(root);
+		delete root;
+	}
+	board getBoard(Node *p) {
+		board currentBoard = rootBoard;
+		stack<int> back;
+		Node *q = p;
+		while (q->parent != NULL) {
+			back.push(q->move);
+			q = q->parent;
+		}
+		if (!back.empty())
+			back.pop();
+		while (!back.empty()) {
+			bool player = currentBoard.getcurrentplayer();
+			int coordX = back.top() / SIZE + 1;
+			int coordY = back.top() % SIZE + 1;
+			currentBoard.play(player, coordX, coordY);
+			back.pop();
+		}
+		return currentBoard;
 	}
 	void createAllChildrenIfNone(Node *p) {
 		if (p->lchild == NULL) {
-			vector<int> legalPos = p->currentBoard.getemptycells();
-			for (int i = 0; i < legalPos.length(); ++i) {
-				Node *tmp = new Node(p->currentBoard);
-				int coordX = legalPos[i] / SIZE;
-				int coordY = legalPos[i] % SIZE;
-				tmp->currentBoard.play(currentBoard.currentPlayer, coordX, coordY);
-				p->addChild(tmp);
+			int fail = 0;
+			/*bool *check = new bool[175];
+			memset(check, 0, 175 * sizeof(bool));*/
+			board currentBoard = getBoard(p);
+			for (int randomNumber = 0; randomNumber < 169; ++randomNumber) {
+				Node *tmp = new Node();
+				board tmpBoard = currentBoard;
+				/*int randomNumber;
+				while (fail < 300) {
+				randomNumber = rand() * 169 / (MAXINT + 1);
+				if (check[randomNumber]) fail++;
+				else break;
+				}
+				if (fail >= 300) break;
+				check[randomNumber] = 1;*/
+				int coordX = randomNumber / SIZE + 1;
+				int coordY = randomNumber % SIZE + 1;
+				tmp->move = randomNumber;
+				bool flag = tmpBoard.getcurrentplayer();
+				tmp->player = flag;
+				if (tmpBoard.play(flag, coordX, coordY)) {
+					p->addChild(tmp);
+				}
+				else {
+					//delete tmp;
+					fail++;
+				}
 			}
 		}
 	}
-	void update(Node *s, char winner) {
-		while(s != NULL) {
-			if(s->currentBoard->currentPlayer == winner) s->updateWin();
+	void update(Node *s, bool winner) {
+		while (s != NULL) {
+			if (s->player == winner) s->updateWin();
 			else s->updateLoss();
 			s = s->parent;
 		}
@@ -142,17 +193,61 @@ public:
 	void playOneSequenceInMoGo() {
 		Node* p = root;
 		createAllChildrenIfNone(p);
+		//showTree(0);
 		do {
 			p = p->findBestChild();
-			if(p->isLeaf()) {
-				if(p->total == 0) break;
+			//if (p == NULL) return;
+			if (p != NULL && p->isLeaf()) {
+				if (p->total == 0) break;
 				createAllChildrenIfNone(p);
 				p = p->findBestChild();
 				break;
 			}
 		} while (1);
-		montecarlo m(p->currentBoard);
-		update(p, m.getWinner());
+		board currentBoard;
+		if (p != NULL) {
+			currentBoard = getBoard(p);
+			montecarlo m(currentBoard);
+			update(p, m.getWinner());
+		}
+		else {
+			currentBoard = getBoard(p->parent);
+			montecarlo m(currentBoard);
+			update(p->parent, m.getWinner());
+		}
+		
+		
+	}
+	int getNextMove() {
+		Node *tmp = root->findBestChild();
+		return tmp->move;
+	}
+	void showTree(bool flag = 1) {
+		Node *p = root;
+		int level = 0;
+		while (p != NULL) {
+			printf("level-%d ", level++);
+			Node* sib = p;
+			int levelNum = 0;
+			while (sib != NULL) {
+				if (flag)
+					printf("%d/%d ", sib->win, sib->total);
+				else {
+					if (sib->total == 0) {
+						sib = sib->sibling;
+						continue;
+					}
+					levelNum++;
+					printf("%d/%d ", sib->win, sib->total);
+				}
+				sib = sib->sibling;
+			}
+			printf("%d\n", levelNum);
+			p = p->lchild;
+		}
+	}
+	void showTotal() {
+		printf("%d/%d\n", root->win, root->total);
 	}
 
 };
