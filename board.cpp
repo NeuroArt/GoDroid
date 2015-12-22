@@ -1,26 +1,36 @@
 #include "board.h"
 
+void kaku::Union(kaku* a,kaku* b){
+	kaku* pa = a->findparent();
+	kaku* pb = b->findparent();
+	if(pa!=pb){
+		pa->parent=pb;
+		pb->fakeliberty+=pa->fakeliberty;
+	}
+}
+
+kaku* kaku::findparent(){
+	if(this==this->parent)
+		return this;
+	return this->parent=this->parent->findparent();
+}
+
+short kaku::findliberty(){
+	return this->findparent()->fakeliberty;
+}
+
 board::board(){
 	for(int i=0;i<SIZE+2;++i){
 		goban[0][i].c = border;
 		goban[14][i].c = border;
 		goban[i][0].c = border;
 		goban[i][14].c = border;
-
-		goban[0][i].liberty = 0;
-		goban[14][i].liberty = 0;
-		goban[i][0].liberty = 0;
-		goban[i][14].liberty = 0;
-
-		if (goban[1][i].liberty>0)
-			goban[1][i].liberty--;
-		if (goban[13][i].liberty>0)
-			goban[13][i].liberty--;
-		if (goban[i][1].liberty>0)
-			goban[i][1].liberty--;
-		if (goban[i][13].liberty>0)
-			goban[i][13].liberty--;
 	}
+	for(int i=0;i<SIZE+2;++i)
+		for(int j=0;j<SIZE+2;++j){
+			goban[i][j].parent = &goban[i][j];
+			goban[i][j].fakeliberty = 0;
+		}
 	currentplayer = true;
 	ko_i = -1;
 	ko_j = -1;
@@ -37,8 +47,11 @@ board::board(const board& b){
 	for(int i=0;i<SIZE+2;++i)
 		for(int j=0;j<SIZE+2;++j){
 			goban[i][j].c = b.goban[i][j].c;
-			goban[i][j].liberty = b.goban[i][j].liberty;
+			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
 		}
+	for(int i=0;i<SIZE+2;++i)
+		for(int j=0;j<SIZE+2;++j)
+			goban[i][j].parent = b.goban[i][j].parent;
 	currentplayer = b.currentplayer;
 /*	emptycells = new std::set<int>(*b.emptycells);*/
 	ko_i = b.ko_i;
@@ -53,29 +66,13 @@ void board::clear_board(){
 	for(int i=1;i<SIZE+1;++i){
 		for(int j=1;j<SIZE+1;++j){
 			goban[i][j].c = empty;
-			goban[i][j].liberty=4;
 		}
 	}
-	for(int i=0;i<SIZE+2;++i){
-		goban[0][i].c = border;
-		goban[14][i].c = border;
-		goban[i][0].c = border;
-		goban[i][14].c = border;
-
-		goban[0][i].liberty = 0;
-		goban[14][i].liberty = 0;
-		goban[i][0].liberty = 0;
-		goban[i][14].liberty = 0;
-
-		if (goban[1][i].liberty>0)
-			goban[1][i].liberty--;
-		if (goban[13][i].liberty>0)
-			goban[13][i].liberty--;
-		if (goban[i][1].liberty>0)
-			goban[i][1].liberty--;
-		if (goban[i][13].liberty>0)
-			goban[i][13].liberty--;
-	}
+	for(int i=0;i<SIZE+2;++i)
+		for(int j=0;j<SIZE+2;++j){
+			goban[i][j].parent = &goban[i][j];
+			goban[i][j].fakeliberty = 0;
+		}
 	currentplayer = true;
 	ko_i = -1;
 	ko_j = -1;
@@ -86,66 +83,56 @@ void board::clear_board(){
 
 void board::place(bool player, kaku*k){
 	k->c = player?black:white;
-	if ((k+1)->c!=border)
-		(k+1)->liberty --;
-	if ((k-1)->c!=border)
-		(k-1)->liberty --;
-	if ((k+SIZE+2)->c!=border)
-		(k+SIZE+2)->liberty --;
-	if ((k-(SIZE+2))->c!=border)
-		(k-(SIZE+2))->liberty --;
+	if ((k+1)->c!=border&&(k+1)->c!=empty)
+		(k+1)->findparent()->fakeliberty --;
+	if ((k-1)->c!=border&&(k-1)->c!=empty)
+		(k-1)->findparent()->fakeliberty --;
+	if ((k+SIZE+2)->c!=border&&(k+SIZE+2)->c!=empty)
+		(k+SIZE+2)->findparent()->fakeliberty --;
+	if ((k-(SIZE+2))->c!=border&&(k-(SIZE+2))->c!=empty)
+		(k-(SIZE+2))->findparent()->fakeliberty --;
 /*	emptycells->erase(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
 
 bool board::deathtest(kaku* k){
-	k->visited = true;
-	if(k->liberty!=0){
-		k->visited = false;
+	if(k->findparent()->fakeliberty!=0)
 		return false;
-	}
-	bool flag1=true,flag2=true,flag3=true,flag4=true;
-	if ((k+1)->c == k->c&&!(k+1)->visited)
-		flag1 = deathtest(k+1);
-	if ((k-1)->c == k->c&&!(k-1)->visited)
-		flag2 = deathtest(k-1);
-	if ((k+SIZE+2)->c == k->c&&!(k+SIZE+2)->visited)
-		flag3 = deathtest(k+SIZE+2);
-	if ((k-(SIZE+2))->c == k->c&&!(k-(SIZE+2))->visited)
-		flag4 = deathtest(k-(SIZE+2));
-	k->visited = false;
-	return flag1&&flag2&&flag3&&flag4;
+	return true;
 }
 
 void board::kill(kaku* k){
 	k->c = empty;
-	if ((k+1)->c!=border)
-		(k+1)->liberty ++;
-	if ((k-1)->c!=border)
-		(k-1)->liberty ++;
-	if ((k+SIZE+2)->c!=border)
-		(k+SIZE+2)->liberty ++;
-	if ((k-(SIZE+2))->c!=border)
-		(k-(SIZE+2))->liberty ++;
+	if ((k+1)->c!=border&&(k+1)->c!=empty)
+		(k+1)->findparent()->fakeliberty ++;
+	if ((k-1)->c!=border&&(k-1)->c!=empty)
+		(k-1)->findparent()->fakeliberty ++;
+	if ((k+SIZE+2)->c!=border&&(k+SIZE+2)->c!=empty)
+		(k+SIZE+2)->findparent()->fakeliberty ++;
+	if ((k-(SIZE+2))->c!=border&&(k-(SIZE+2))->c!=empty)
+		(k-(SIZE+2))->findparent()->fakeliberty ++;
 /*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
 
 void board::killall(kaku* k, cell state,int &total){
 	k->c = empty;
+	k->parent = k;
+	k->fakeliberty = 0;
 	total += 1;
 	ko_i = (k-&goban[0][0])/(SIZE+2);
 	ko_j = (k-&goban[0][0])%(SIZE+2);
 /*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
-	if ((k+1)->c!=border)
-		(k+1)->liberty ++;
-	if ((k-1)->c!=border)
-		(k-1)->liberty ++;
-	if ((k+SIZE+2)->c!=border)
-		(k+SIZE+2)->liberty ++;
-	if ((k-(SIZE+2))->c!=border)
-		(k-(SIZE+2))->liberty ++;
+	cell enemy = (state==white?black:white);
+	if ((k+1)->c==enemy)
+		(k+1)->findparent()->fakeliberty ++;
+	if ((k-1)->c==enemy)
+		(k-1)->findparent()->fakeliberty ++;
+	if ((k+SIZE+2)->c==enemy)
+		(k+SIZE+2)->findparent()->fakeliberty ++;
+	if ((k-(SIZE+2))->c==enemy)
+		(k-(SIZE+2))->findparent()->fakeliberty ++;
 	if ((k+1)->c==state)
 		killall(k+1,state,total);
 	if ((k-1)->c==state)
@@ -254,7 +241,6 @@ bool board::play(bool& player,int coordx, int coordy){
 	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
 		return false;
 	}
-	bool flag = false; //flag indicates has any enemy been eliminated.
 	cell enemy = player?white:black;
 	place(player,target);
 	int total = 0;
@@ -271,10 +257,24 @@ bool board::play(bool& player,int coordx, int coordy){
 		ko_j = -1;
 	}
 	//printf("%d %d %d\n",total,ko_i,ko_j);
-	if (deathtest(target)){
+	cell alley = player?black:white;
+	bool flag1 = (target+1)->c==empty||((target+1)->c==alley&&(target+1)->findliberty()!=0);
+	bool flag2 = (target-1)->c==empty||((target-1)->c==alley&&(target-1)->findliberty()!=0);
+	bool flag3 = (target+SIZE+2)->c==empty||((target+SIZE+2)->c==alley&&(target+SIZE+2)->findliberty()!=0);
+	bool flag4 = (target-(SIZE+2))->c==empty||((target-(SIZE+2))->c==alley&&(target-(SIZE+2))->findliberty()!=0);
+	if (!flag1&&!flag2&&!flag3&&!flag4){
 		kill(target);
 		return false;
 	}
+	target->fakeliberty = ((target+1)->c==empty)+((target-1)->c==empty)+((target+SIZE+2)->c==empty)+((target-(SIZE+2))->c==empty);
+	if((target+1)->c==alley)
+		kaku::Union(target,target+1);
+	if((target-1)->c==alley)
+		kaku::Union(target,target-1);
+	if((target+(SIZE+2))->c==alley)
+		kaku::Union(target,target+(SIZE+2));
+	if((target-(SIZE+2))->c==alley)
+		kaku::Union(target,target-(SIZE+2));
 	currentplayer = !currentplayer;
 	return true;
 }
