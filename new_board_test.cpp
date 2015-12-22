@@ -44,7 +44,13 @@ int main(){
 		cout << finish - start << endl;
 		b.showboard();
 	}
+	/*start = clock();
+	for(int i = 0; i < 10000; ++i) {
+		montecarlo m(b);
+	}
+	finish = clock();
+	printf("%d\n", finish - start);*/
 	
-	printf("ºÚÆå±È°×Æå¶à%d\n",b.judge());
+	//printf("ºÚÆå±È°×Æå¶à%d\n",b.judge());
 	system("pause");
 }

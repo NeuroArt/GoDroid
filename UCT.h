@@ -28,7 +28,6 @@ private:
 			sibling = NULL;
 			player = 1;
 			move = 0;
-			//currentBoard = inBoard;
 		}
 		//explore_coeff = 2 * ln(Total Simulations)
 		float getUCBValue(float explore_coeff) {
@@ -83,10 +82,6 @@ private:
 			if (lchild == NULL) return 1;
 			return 0;
 		}
-		/*		char oppositeColor() {
-		if(color == 'B') return 'W';
-		else return 'B';
-		}*/
 		Node* findBestChild() {
 			Node* bestChild = NULL;
 			float explore_coeff = log(total) * 2;
@@ -154,20 +149,11 @@ public:
 	void createAllChildrenIfNone(Node *p) {
 		if (p->lchild == NULL) {
 			int fail = 0;
-			/*bool *check = new bool[175];
-			memset(check, 0, 175 * sizeof(bool));*/
 			board currentBoard = getBoard(p);
 			for (int randomNumber = 0; randomNumber < 169; ++randomNumber) {
 				Node *tmp = new Node();
 				board tmpBoard = currentBoard;
-				/*int randomNumber;
-				while (fail < 300) {
-				randomNumber = rand() * 169 / (MAXINT + 1);
-				if (check[randomNumber]) fail++;
-				else break;
-				}
-				if (fail >= 300) break;
-				check[randomNumber] = 1;*/
+				
 				int coordX = randomNumber / SIZE + 1;
 				int coordY = randomNumber % SIZE + 1;
 				tmp->move = randomNumber;
