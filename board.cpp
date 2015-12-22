@@ -48,10 +48,9 @@ board::board(const board& b){
 		for(int j=0;j<SIZE+2;++j){
 			goban[i][j].c = b.goban[i][j].c;
 			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+			goban[i][j].parent = &goban[0][0]+(b.goban[i][j].parent-&b.goban[0][0]);
+			//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
 		}
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j)
-			goban[i][j].parent = b.goban[i][j].parent;
 	currentplayer = b.currentplayer;
 /*	emptycells = new std::set<int>(*b.emptycells);*/
 	ko_i = b.ko_i;
@@ -152,11 +151,11 @@ void board::showboard(){
 	for(int i=1;i<SIZE+1;++i){
 		printf("%c",'A'+i-1);
 		for(int j=1;j<SIZE+1;++j){
-			if(goban[i][j].c==0||goban[i][j].c==4)
+			if(goban[i][j].c==empty||goban[i][j].c==border)
 				printf("%c",43);
-			if(goban[i][j].c==1)
+			if(goban[i][j].c==black)
 				printf("%c",'X');
-			if(goban[i][j].c==2)
+			if(goban[i][j].c==white)
 				printf("%c",'O');
 		}
 		printf("\n");
@@ -277,4 +276,19 @@ bool board::play(bool& player,int coordx, int coordy){
 		kaku::Union(target,target-(SIZE+2));
 	currentplayer = !currentplayer;
 	return true;
+}
+
+board& board::operator=(const board& b){
+	for(int i=0;i<SIZE+2;++i)
+		for(int j=0;j<SIZE+2;++j){
+			goban[i][j].c = b.goban[i][j].c;
+			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+			goban[i][j].parent = &goban[0][0]+(b.goban[i][j].parent-&b.goban[0][0]);
+			//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
+		}
+		currentplayer = b.currentplayer;
+		/*	emptycells = new std::set<int>(*b.emptycells);*/
+		ko_i = b.ko_i;
+		ko_j = b.ko_j;
+	return *this;
 }
