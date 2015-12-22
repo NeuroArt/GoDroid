@@ -146,18 +146,18 @@ void board::killall(kaku* k, cell state,int &total){
 void board::showboard(){
 	printf("%c",' ');
 	for(int i=1;i<SIZE+1;++i){
-		printf("%c",'a'+i-1);
+		printf("%c ",'a'+i-1);
 	}
 	printf("\n");
 	for(int i=1;i<SIZE+1;++i){
-		printf("%c",'A'+i-1);
+		printf("%c ",'A'+i-1);
 		for(int j=1;j<SIZE+1;++j){
 			if(goban[i][j].c==0||goban[i][j].c==4)
-				printf("%c",43);
+				printf(". ");
 			if(goban[i][j].c==1)
-				printf("%c",'X');
+				printf("%c ",'X');
 			if(goban[i][j].c==2)
-				printf("%c",'O');
+				printf("%c ",'O');
 		}
 		printf("\n");
 	}

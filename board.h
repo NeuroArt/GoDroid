@@ -73,7 +73,7 @@ public:
 	void final_status_list(); //未实现，返回类型未确定
 	void compute_final_status();
 	void set_final_status_string(int pos, int status){}//需要棋串
-	int has_additional_liberty(int i, int j, int libi, int libj){}
+	int has_additional_liberty(int i, int j, int libi, int libj){ return 0; }
         //需要棋串，(i,j)所在的棋串除(libi,libj)外是否还有其他的气
     int black_raw();//贴目前黑的总子数
 	void showboard();
