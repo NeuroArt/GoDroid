@@ -4,9 +4,6 @@
 #include <iostream>
 //#include <set>
 #define SIZE 13
-#define PROTOCOL_VERSION "2"
-#define NAME "Neuroart"
-#define VERSION "0.01"
 
 #define DEAD 0
 #define ALIVE 1
@@ -24,26 +21,28 @@ static int offset_y[4] = {0, 0, -1, 1};
 
 enum cell{
 	empty = 0, //0
-	black,     //1
-	white,   //2
+	white,     //1
+	black,   //2
 	border  //3
 };
 
 struct kaku{
-	bool visited;
 	cell c;
-	int liberty;
-	kaku(int state=0, int l=4){
-		visited = false;
+	kaku* parent;
+	short fakeliberty;
+	kaku(int state=0, int l=0){
+		parent = this;
 		c = (cell)state;
-		liberty = l;
+		fakeliberty = l;
 	}
+	static void Union(kaku* a,kaku* b);
+	kaku* findparent();
+	short findliberty();
 };
 
 class board{
 private:
 	static const int board_size = SIZE;
-
 	kaku goban[SIZE+2][SIZE+2];
 	bool currentplayer; //true=black; false=white
 /*	std::set<int> *emptycells;*/
@@ -54,6 +53,7 @@ private:
 
 	void place(bool player, kaku*k);
 	bool deathtest(kaku* k);
+	bool bfs(kaku* k);
 	void kill(kaku* k);
 	void killall(kaku* k, cell state,int &total);
 
@@ -61,11 +61,6 @@ public:
 	board();
 	board(const board& b);
 	~board();
-	char* get_protocol_version(){return PROTOCOL_VERSION;}
-	char* get_name(){return NAME;}
-	char* get_version(){return VERSION;}
-	void get_known_command(); //未实现，返回类型未确定
-	void quit(); //未实现，返回类型未确定
 	int get_boardsize(){return board_size;}
 	cell get_cell(int i, int j);
 	void clear_board();
