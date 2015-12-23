@@ -44,18 +44,32 @@ board::board(){
 }
 
 board::board(const board& b){
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j){
-			goban[i][j].c = b.goban[i][j].c;
-			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+	for (int i = 0; i<SIZE + 2; ++i)
+		for (int j = 0; j<SIZE + 2; ++j){
+		goban[i][j].c = b.goban[i][j].c;
+		goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+		goban[i][j].parent = &goban[0][0] + (b.goban[i][j].parent - &b.goban[0][0]);
+		//printf("%d\n", (goban[i][j].parent - &goban[0][0]));
 		}
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j)
-			goban[i][j].parent = b.goban[i][j].parent;
 	currentplayer = b.currentplayer;
-/*	emptycells = new std::set<int>(*b.emptycells);*/
+	/*	emptycells = new std::set<int>(*b.emptycells);*/
 	ko_i = b.ko_i;
 	ko_j = b.ko_j;
+}
+
+board& board::operator=(const board& b){
+	for (int i = 0; i<SIZE + 2; ++i)
+		for (int j = 0; j<SIZE + 2; ++j){
+		goban[i][j].c = b.goban[i][j].c;
+		goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+		goban[i][j].parent = &goban[0][0] + (b.goban[i][j].parent - &b.goban[0][0]);
+		//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
+		}
+	currentplayer = b.currentplayer;
+	/*	emptycells = new std::set<int>(*b.emptycells);*/
+	ko_i = b.ko_i;
+	ko_j = b.ko_j;
+	return *this;
 }
 
 board::~board(){
@@ -162,6 +176,7 @@ void board::showboard(){
 		printf("\n");
 	}
 }
+
 
 // std::set<int>* board::getemptycells(){
 // 	//std::vector<int> result;

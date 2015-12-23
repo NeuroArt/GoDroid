@@ -4,14 +4,14 @@
 #include <time.h>
 #include <stdio.h>
 
-montecarlo::montecarlo(board inBoard) {
+montecarlo::montecarlo(board &inBoard) {
 	getInitBoard(inBoard);
 	run();
 }
 
 montecarlo::~montecarlo() {}
 
-void montecarlo::getInitBoard(board inBoard) {
+void montecarlo::getInitBoard(board &inBoard) {
 	currentBoard = inBoard;
 }
 

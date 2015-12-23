@@ -23,12 +23,13 @@ int main(){
 		start = clock();
 		finish = clock();
 		int cnt = 0;
-		while (finish - start < 2000){ //一直模拟到2秒钟
+		while(finish - start < 1000){ //一直模拟到2秒钟
 			tree.playOneSequenceInMoGo();
 			finish = clock();
 			cnt++;
 		}
 		printf("cnt: %d\n", cnt);
+		tree.showTotal();
 		int move = tree.getNextMove();//获得模拟出的最佳下一步
 		int positionX = move / SIZE + 1;
 		int positionY = move % SIZE + 1;

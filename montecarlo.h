@@ -10,9 +10,9 @@ private:
 	board currentBoard;
 	bool winner;
 public:
-	montecarlo(board inBoard);
+	montecarlo(board &inBoard);
 	~montecarlo();
-	void getInitBoard(board inBoard);
+	void getInitBoard(board &inBoard);
 	void run();
 	int getWinner();
 };

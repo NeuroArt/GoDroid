@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <stack>
+#include <assert.h>
 #include "board.h"
 #include "montecarlo.h"
 #define largeFloat 1000000000000.0
@@ -118,17 +119,24 @@ private:
 	};
 	Node *root;
 	board rootBoard;
+	Node *garbage;
 public:
-	UCT(board inBoard) {
+	UCT(board &inBoard) {
 		root = new Node;
 		rootBoard = inBoard;
+		garbage = new Node;
 	}
 	~UCT() {
 		root->freeSubtree(root);
 		delete root;
+		/*while (garbage != NULL) {
+			Node *p = garbage;
+			garbage = garbage->sibling;
+			delete p;
+		}*/
 	}
 	board getBoard(Node *p) {
-		board currentBoard = rootBoard;
+		board currentBoard(rootBoard);
 		stack<int> back;
 		Node *q = p;
 		while (q->parent != NULL) {
@@ -139,21 +147,22 @@ public:
 			back.pop();
 		while (!back.empty()) {
 			bool player = currentBoard.getcurrentplayer();
-			int coordX = back.top() / SIZE + 1;
-			int coordY = back.top() % SIZE + 1;
-			currentBoard.play(player, coordX, coordY);
+			int num = back.top();
 			back.pop();
+			int coordX = num / SIZE + 1;
+			int coordY = num % SIZE + 1;
+			currentBoard.play(player, coordX, coordY);
 		}
 		return currentBoard;
 	}
 	void createAllChildrenIfNone(Node *p) {
+		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			int fail = 0;
-			board currentBoard = getBoard(p);
+			board currentBoard(getBoard(p));
 			for (int randomNumber = 0; randomNumber < 169; ++randomNumber) {
 				Node *tmp = new Node();
-				board tmpBoard = currentBoard;
-				
+				board tmpBoard(currentBoard);
 				int coordX = randomNumber / SIZE + 1;
 				int coordY = randomNumber % SIZE + 1;
 				tmp->move = randomNumber;
@@ -163,8 +172,13 @@ public:
 					p->addChild(tmp);
 				}
 				else {
-					//delete tmp;
-					fail++;
+					//printf("~~~~~~~~~~~~~~~~~~~~~\n");
+					//printf("%d\n", tmp->move);
+					//printf("~~~~~~~~~~~~~~~~~~~~~\n");
+					delete tmp;
+					//fail++;
+					//tmp->sibling = garbage;
+					//garbage = tmp;
 				}
 			}
 		}
@@ -190,19 +204,17 @@ public:
 				break;
 			}
 		} while (1);
-		board currentBoard;
 		if (p != NULL) {
-			currentBoard = getBoard(p);
+			board currentBoard(getBoard(p));
 			montecarlo m(currentBoard);
 			update(p, m.getWinner());
 		}
 		else {
-			currentBoard = getBoard(p->parent);
+			assert(0);
+			board currentBoard(getBoard(p->parent));
 			montecarlo m(currentBoard);
 			update(p->parent, m.getWinner());
-		}
-		
-		
+		}	
 	}
 	int getNextMove() {
 		Node *tmp = root->findBestChild();
