@@ -49,11 +49,9 @@ static struct gtp_command commands[] = {
 };
 
 
-/* Initialize the board. */
-ai *AI = new ai();
 
 int
-main(int argc, char **argv)
+main(int argc, char **argv) 
 {
   unsigned int random_seed = 1;
 
@@ -68,6 +66,9 @@ main(int argc, char **argv)
   /* Inform the GTP utility functions about the initial board size. */
   gtp_internal_set_boardsize(SIZE);
 
+  /* Initialize the board. */
+  init_ai();
+
   /* Process GTP commands. */
   gtp_main_loop(commands, stdin, NULL);
 
@@ -76,25 +77,25 @@ main(int argc, char **argv)
 
 /* We are talking version 2 of the protocol. */
 static int
-gtp_protocol_version(char *s)
+gtp_protocol_version(char *s) 
 {
   return gtp_success("2");
 }
 
 static int
-gtp_name(char *s)
+gtp_name(char *s) 
 {
-  return gtp_success("Brown");
+  return gtp_success("AI");
 }
 
 static int
-gtp_version(char *s)
+gtp_version(char *s) 
 {
   return gtp_success(VERSION);
 }
 
 static int
-gtp_known_command(char *s)
+gtp_known_command(char *s) 
 {
   int i;
   char command_name[GTP_BUFSIZE];
@@ -113,7 +114,7 @@ gtp_known_command(char *s)
 }
 
 static int
-gtp_list_commands(char *s)
+gtp_list_commands(char *s) 
 {
   int i;
 
@@ -127,27 +128,26 @@ gtp_list_commands(char *s)
 }
 
 static int
-gtp_quit(char *s)
+gtp_quit(char *s) //checked
 {
   gtp_success("");
   return GTP_QUIT;
 }
 
 static int
-gtp_boardsize(char *s)
+gtp_boardsize(char *s) 
 {
   int boardsize;
 
   if (sscanf(s, "%d", &boardsize) < 1)
     return gtp_failure("boardsize not an integer");
 
-  //if (boardsize < MIN_BOARD || boardsize > MAX_BOARD)
-  if(boardsize != SIZE)
+  if (boardsize < 13 || boardsize > 13)
     return gtp_failure("unacceptable size");
 
-  //board_size = boardsize;
+  board_size = boardsize;
   gtp_internal_set_boardsize(boardsize);
-  //init_brown();
+  init_ai();
 
   return gtp_success("");
 }
@@ -155,7 +155,7 @@ gtp_boardsize(char *s)
 static int
 gtp_clear_board(char *s)
 {
-  brd->clear_board();
+  clear_board();
   return gtp_success("");
 }
 
@@ -176,7 +176,7 @@ place_handicap(char *s, int fixed)
   int m, n;
   int first_stone = 1;
 
-  if (!(AI->board_empty()))
+  if (!board_empty())
     return gtp_failure("board not empty");
 
   if (sscanf(s, "%d", &handicap) < 1)
@@ -185,18 +185,18 @@ place_handicap(char *s, int fixed)
   if (handicap < 2)
     return gtp_failure("invalid handicap");
 
-  if (fixed && !AI->valid_fixed_handicap(handicap))
+  if (fixed && !valid_fixed_handicap(handicap))
     return gtp_failure("invalid handicap");
 
   if (fixed)
-    AI->place_fixed_handicap(handicap);
+    place_fixed_handicap(handicap);
   else
-    AI->place_free_handicap(handicap);
+    place_free_handicap(handicap);
 
   gtp_start_response(GTP_SUCCESS);
-  for (m = 0; m < AI->get_boardsize(); m++)
-    for (n = 0; n < AI->get_boardsize(); n++)
-      if (AI->get_board(m, n) != EMPTY) {
+  for (m = 0; m < board_size; m++)
+    for (n = 0; n < board_size; n++)
+      if (get_board(m, n) != EMPTY) {
 	if (first_stone)
 	  first_stone = 0;
 	else
@@ -225,28 +225,28 @@ gtp_set_free_handicap(char *s)
   int n;
   int handicap = 0;
 
-  if (!AI->board_empty())
+  if (!board_empty())
     return gtp_failure("board not empty");
 
   while ((n = gtp_decode_coord(s, &i, &j)) > 0) {
     s += n;
 
-    if (AI->get_board(i, j) != EMPTY) {
-      AI->clear_board();
+    if (get_board(i, j) != EMPTY) {
+      clear_board();
       return gtp_failure("repeated vertex");
     }
 
-    AI->play_move(i, j, BLACK);
+    play_move(i, j, BLACK);
     handicap++;
   }
 
   if (sscanf(s, "%*s") != EOF) {
-      AI->clear_board();
+      clear_board();
       return gtp_failure("invalid coordinate");
   }
 
-  if (handicap < 2 || handicap >= AI->get_boardsize() * AI->get_boardsize()) {
-      AI->clear_board();
+  if (handicap < 2 || handicap >= board_size * board_size) {
+      clear_board();
       return gtp_failure("invalid handicap");
   }
 
@@ -262,10 +262,10 @@ gtp_play(char *s)
   if (!gtp_decode_move(s, &color, &i, &j))
     return gtp_failure("invalid color or coordinate");
 
-  if (!AI->legal_move(i, j, color))
+  if (!legal_move(i, j, color))
     return gtp_failure("illegal move");
 
-  AI->play_move(i, j, color);
+  play_move(i, j, color);
   return gtp_success("");
 }
 
@@ -278,8 +278,8 @@ gtp_genmove(char *s)
   if (!gtp_decode_color(s, &color))
     return gtp_failure("invalid color");
 
-  AI->generate_move(&i, &j, color);
-  AI->play_move(i, j, color);
+  generate_move(&i, &j, color);
+  play_move(i, j, color);
 
   gtp_start_response(GTP_SUCCESS);
   gtp_mprintf("%m", i, j);
@@ -295,18 +295,18 @@ gtp_final_score(char *s)
   float score = komi;
   int i, j;
 
-  AI->compute_final_status();
-  for (i = 0; i < AI->get_boardsize(); i++)
-    for (j = 0; j < AI->get_boardsize(); j++) {
-      int status = AI->get_final_status(i, j);
+  compute_final_status();
+  for (i = 0; i < board_size; i++)
+    for (j = 0; j < board_size; j++) {
+      int status = get_final_status(i, j);
       if (status == BLACK_TERRITORY)
-	score--;
+		score--;
       else if (status == WHITE_TERRITORY)
-	score++;
-      else if ((status == ALIVE) ^ (AI->get_board(i, j) == WHITE))
-	score--;
+		score++;
+      else if ((status == ALIVE) ^ (get_board(i, j) == WHITE))
+		score--;
       else
-	score++;
+		score++;
     }
 
   if (score > 0.0)
@@ -337,28 +337,21 @@ gtp_final_status_list(char *s)
   else
     return gtp_failure("invalid status");
 
-  AI->compute_final_status();
+  compute_final_status();
 
   gtp_start_response(GTP_SUCCESS);
 
   first_string = 1;
-  for (i = 0; i < AI->get_boardsize(); i++)
-    for (j = 0; j < AI->get_boardsize(); j++)
-      if (AI->get_final_status(i, j) == status) {
-	int k;
-	int stonei[MAX_BOARD * MAX_BOARD];
-	int stonej[MAX_BOARD * MAX_BOARD];
-	int num_stones = AI->get_string(i, j, stonei, stonej);
-	/* Clear the status so we don't find the string again. */
-	for (k = 0; k < num_stones; k++)
-	  AI->set_final_status(stonei[k], stonej[k], UNKNOWN);
+  for (i = 0; i < board_size; i++)
+    for (j = 0; j < board_size; j++)
+      if (get_final_status(i, j) == status) {
 
-	if (first_string)
-	  first_string = 0;
-	else
-	  gtp_printf("\n");
+		if (first_string)
+		  first_string = 0;
+		else
+		  gtp_printf("\n");
 
-	gtp_print_vertices(num_stones, stonei, stonej);
+		gtp_print_vertex(i, j);
       }
 
   return gtp_finish_response();
@@ -371,7 +364,7 @@ letters(void)
   int i;
 
   printf("  ");
-  for (i = 0; i < AI->get_boardsize(); i++)
+  for (i = 0; i < board_size; i++)
     printf(" %c", 'A' + i + (i >= 8));
 }
 
@@ -386,24 +379,16 @@ gtp_showboard(char *s)
 
   letters();
 
-  for (i = 0; i < AI->get_boardsize(); i++) {
-    printf("\n%2d", AI->get_boardsize() - i);
+  for (i = 0; i < board_size; i++) {
+    printf("\n%2d", board_size - i);
 
-    for (j = 0; j < AI->get_boardsize(); j++)
-      printf(" %c", symbols[AI->get_board(i, j)]);
+    for (j = 0; j < board_size; j++)
+      printf(" %c", symbols[get_board(i, j)]);
 
-    printf(" %d", AI->get_boardsize() - i);
+    printf(" %d", board_size - i);
   }
 
   printf("\n");
   letters();
   return gtp_finish_response();
 }
-
-
-/*
- * Local Variables:
- * tab-width: 8
- * c-basic-offset: 2
- * End:
- */
