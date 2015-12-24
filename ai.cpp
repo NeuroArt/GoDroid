@@ -1,10 +1,23 @@
+#include <ctime>
 #include "ai.h"
+#include "UCT.h"
+
+board *brd;
+int board_size = SIZE;
+float komi = 3.14;
+int ko_i, ko_j;//illeagal ko point
+
+static int on_board(int i, int j){return i >= 0 && i < board_size && j >= 0 && j < board_size;};
 
 void init_ai(){
 	brd = new board();
 	//get_komi();
 }
 
+void clear_board(){brd->clear_board();}
+int board_empty(){return brd->board_empty();}
+int get_board(int i, int j){return brd->get_cell(i+1,j+1);}
+int get_boardsize(){return board_size;}
 
 int pass_move(int i, int j)
 {
@@ -92,42 +105,9 @@ void place_free_handicap(int handicap)
   }
 }
 
-void generate_move(int *i, int *j, int color)
-{
-	int moves[SIZE * SIZE];
-	int num_moves = 0;
-	int move;
-	int ai, aj;
-	int k;
-
-	//need interpretation
-
-	i--;j--;
-}
-
-void play_move(int i, int j, int color)
-{
-	int captured_stones = 0;
-	int k;
-
-	/* Reset the ko point. */
-	ko_i = -1;
-	ko_j = -1;
-	i++;j++;
-
-	//need interpretation
-}
-
-static int get_final_status(int i, int j)
-{
-	return brd->get_final_status(i+1, j+1);
-}
-
 void compute_final_status(void){
 	int i, j;
-	int pos;
 	int k;
-
 	for (i = 0; i < board_size; i++)
 		for (j = 0; j < board_size; j++)
 			set_final_status(i,j,UNKNOWN);
@@ -169,3 +149,36 @@ void compute_final_status(void){
 					}
 				}
 }
+
+void set_final_status(int i, int j, int status){
+	brd->set_final_status(i+1, j+1, status);
+}
+
+void generate_move(int *i, int *j, int color) {
+	UCT tree(*brd);
+	int startTime = clock();
+	int finishTime = clock();
+	int cnt = 0;
+	while(finishTime - startTime < 2500) {
+		tree.playOneSequenceInMoGo();
+		finishTime = clock();
+		cnt++;
+	}
+	int mov = tree.getNextMove();
+	*i = mov/SIZE;
+	*j = mov%SIZE;
+}
+
+void play_move(int i, int j, int color){
+	int mov = i*SIZE + j;
+	int posX = mov / SIZE + 1;
+	int posY = mov % SIZE + 1;
+	bool flag = brd->getcurrentplayer();
+	brd->play(flag, posX, posY);
+}
+
+int get_final_status(int i, int j){return brd->get_final_status(i+1, j+1);}
+char* get_protocol_version(){return PROTOCOL_VERSION;}
+char* get_name(){return NAME;}
+char* get_version(){return VERSION;}
+short find_liberty(int i, int j){return brd->find_liberty(i+1, j+1);}

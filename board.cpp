@@ -182,7 +182,7 @@ void board::showboard(){
 cell board::get_cell(int i, int j){
     return goban[i][j].c;
 }
-
+/*
 void board::compute_final_status(){
     for(int pos = 0; pos < SIZE*SIZE; ++pos)
         final_status[pos] = UNKNOWN;
@@ -215,7 +215,7 @@ void board::compute_final_status(){
         }
     }
 }
-
+*/
 int board::black_raw(){
     int black = 0;
     for(int pos = 0; pos < SIZE*SIZE; ++pos){
@@ -309,6 +309,9 @@ int board::board_empty(){
 	return 1;
 }
 
+void board::set_final_status(int i, int j, int status){
+	goban[i][j].findparent()->final_status = status;
+}
 
 int board::get_final_status(int i, int j){
 	return goban[i][j].get_final_status();

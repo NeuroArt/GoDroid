@@ -1,3 +1,6 @@
+#ifndef _GTP_H
+#define _GTP_H
+
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -43,9 +46,4 @@ int gtp_decode_move(char *s, int *color, int *i, int *j);
 void gtp_print_vertices(int n, int movei[], int movej[]);
 void gtp_print_vertex(int i, int j);
 
-/*
- * Local Variables:
- * tab-width: 8
- * c-basic-offset: 2
- * End:
- */
+#endif

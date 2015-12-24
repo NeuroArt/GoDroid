@@ -64,25 +64,26 @@ public:
 	board();
 	board(const board& b);
 	~board();
+	board& operator=(const board& x);
 	int get_boardsize(){return board_size;}
 	cell get_cell(int i, int j);
 	void clear_board();
 	int board_empty();
-	void genmove(); //未实现，返回类型未确定
-	void final_score(); //未实现，返回类型未确定
-	void compute_final_status();
-	int has_additional_liberty(int i, int j, int libi, int libj){}
+	//void genmove(); 未实现，返回类型未确定
+	//void final_score(); 未实现，返回类型未确定
+	//void compute_final_status();
+	//int has_additional_liberty(int i, int j, int libi, int libj){return 0;}
         //需要棋串，(i,j)所在的棋串除(libi,libj)外是否还有其他的气
     int black_raw();//贴目前黑的总子数
 	void showboard();
+	void showboard(char *str);
 	int judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
 	bool getcurrentplayer(){return currentplayer;}
 	//std::set<int>* getemptycells(); //function cancelled
 	bool play(bool& player,int coordx, int coordy);
 	int get_final_status(int i, int j);
+	void set_final_status(int i, int j, int status);
 	short find_liberty(int i, int j){return goban[i][j].findliberty();}
-
-	board& operator=(const board& x);
 };
 
 #endif

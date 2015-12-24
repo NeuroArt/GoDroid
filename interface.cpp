@@ -3,9 +3,9 @@
 
 #include "board.h"
 #include "gtp.h"
-#include "ai.h"
 #include "montecarlo.h"
 #include "UCT.h"
+#include "ai.h"
 
 /* Forward declarations. */
 static int gtp_protocol_version(char *s);
@@ -49,6 +49,8 @@ static struct gtp_command commands[] = {
 };
 
 
+extern int board_size;
+extern float komi;
 
 int
 main(int argc, char **argv) 
@@ -145,7 +147,6 @@ gtp_boardsize(char *s)
   if (boardsize < 13 || boardsize > 13)
     return gtp_failure("unacceptable size");
 
-  board_size = boardsize;
   gtp_internal_set_boardsize(boardsize);
   init_ai();
 
