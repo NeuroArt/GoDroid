@@ -1,39 +1,41 @@
 #include "montecarlo.h"
-#include "testBoard.h"
+#include "board.h"
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
 
-montecarlo::montecarlo(board inBoard) {
+montecarlo::montecarlo(board &inBoard) {
 	getInitBoard(inBoard);
 	run();
 }
 
 montecarlo::~montecarlo() {}
 
-void montecarlo::getInitBoard(board inBoard) {
+void montecarlo::getInitBoard(board &inBoard) {
 	currentBoard = inBoard;
 }
 
 void montecarlo::run() {
-	srand((unsigned)time(NULL));
-	while (!currentBoard.finished()) {
-		vector<int> legalPos = currentBoard.getemptycells();
-		int randomNumber = rand() * legalPos.length() / (MAXINT + 1);
-		int coordX = legalPos[randomNumber] / SIZE;
-		int coordY = legalPos[randomNumber] % SIZE;
-		currentBoard.play(currentBoard.currentPlayer, coordX, coordY);
+	int step = 0;
+	int fault = 0;
+	//printf("random: ");
+	while (fault <= 1000) {
+		int randomNumber = rand() * 169 / (MAXINT + 1);
+		//printf("%d ", randomNumber);
+		int coordX = randomNumber / SIZE + 1;
+		int coordY = randomNumber % SIZE + 1;
+		bool flag = currentBoard.getcurrentplayer();
+		if (currentBoard.play(flag, coordX, coordY)) {
+			step++;
+		}
+		else {
+			fault++;
+		}
 	}
-	winner = currentBoard.winner;
+	//printf("\n");
+	winner = currentBoard.judge() > 0?1:0;
 }
 
-int montecarlo::getWinner() {
+bool montecarlo::getWinner() {
 	return winner;
-}
-
-int main() {
-	board tmp;
-	montecarlo m(tmp);
-	int _winner = m.getWinner();
-	printf("%d\n", _winner);
 }

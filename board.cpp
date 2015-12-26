@@ -19,6 +19,10 @@ short kaku::findliberty(){
 	return this->findparent()->fakeliberty;
 }
 
+short kaku::get_final_status(){
+	return this->findparent()->final_status;
+}
+
 board::board(){
 	for(int i=0;i<SIZE+2;++i){
 		goban[0][i].c = border;
@@ -30,6 +34,7 @@ board::board(){
 		for(int j=0;j<SIZE+2;++j){
 			goban[i][j].parent = &goban[i][j];
 			goban[i][j].fakeliberty = 0;
+			goban[i][j].final_status = UNKNOWN;
 		}
 	currentplayer = true;
 	ko_i = -1;
@@ -48,6 +53,7 @@ board::board(const board& b){
 		for(int j=0;j<SIZE+2;++j){
 			goban[i][j].c = b.goban[i][j].c;
 			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+			goban[i][j].final_status = b.goban[i][j].final_status;
 			goban[i][j].parent = &goban[0][0]+(b.goban[i][j].parent-&b.goban[0][0]);
 			//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
 		}
@@ -176,7 +182,7 @@ void board::showboard(){
 cell board::get_cell(int i, int j){
     return goban[i][j].c;
 }
-
+/*
 void board::compute_final_status(){
     for(int pos = 0; pos < SIZE*SIZE; ++pos)
         final_status[pos] = UNKNOWN;
@@ -209,7 +215,7 @@ void board::compute_final_status(){
         }
     }
 }
-
+*/
 int board::black_raw(){
     int black = 0;
     for(int pos = 0; pos < SIZE*SIZE; ++pos){
@@ -236,11 +242,15 @@ int board::judge(){
 
 bool board::play(bool& player,int coordx, int coordy){
 	kaku* target = &goban[coordx][coordy];
+	cell enemy = player?white:black;
+	cell alley = player?black:white;
 	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
 	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
 		return false;
 	}
-	cell enemy = player?white:black;
+	if (((target+1)->c==alley||(target+1)->c==border)&&((target-1)->c==alley||(target-1)->c==border)&&((target+SIZE+2)->c==alley||(target+SIZE+2)->c==border)&&((target-(SIZE+2))->c==alley||(target-(SIZE+2))->c==border))
+		return false;
+
 	place(player,target);
 	int total = 0;
 	if ((target+1)->c==enemy&&deathtest(target+1))
@@ -256,7 +266,6 @@ bool board::play(bool& player,int coordx, int coordy){
 		ko_j = -1;
 	}
 	//printf("%d %d %d\n",total,ko_i,ko_j);
-	cell alley = player?black:white;
 	bool flag1 = (target+1)->c==empty||((target+1)->c==alley&&(target+1)->findliberty()!=0);
 	bool flag2 = (target-1)->c==empty||((target-1)->c==alley&&(target-1)->findliberty()!=0);
 	bool flag3 = (target+SIZE+2)->c==empty||((target+SIZE+2)->c==alley&&(target+SIZE+2)->findliberty()!=0);
@@ -283,6 +292,7 @@ board& board::operator=(const board& b){
 		for(int j=0;j<SIZE+2;++j){
 			goban[i][j].c = b.goban[i][j].c;
 			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
+			goban[i][j].final_status = b.goban[i][j].final_status;
 			goban[i][j].parent = &goban[0][0]+(b.goban[i][j].parent-&b.goban[0][0]);
 			//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
 		}
@@ -291,4 +301,21 @@ board& board::operator=(const board& b){
 		ko_i = b.ko_i;
 		ko_j = b.ko_j;
 	return *this;
+}
+
+int board::board_empty(){
+	for (int i = 1; i <= board_size; ++i)
+		for(int j = 1; j <= board_size; ++j)
+			if (goban[i][j].c != empty)
+				return 0;
+
+	return 1;
+}
+
+void board::set_final_status(int i, int j, int status){
+	goban[i][j].findparent()->final_status = status;
+}
+
+int board::get_final_status(int i, int j){
+	return goban[i][j].get_final_status();
 }
