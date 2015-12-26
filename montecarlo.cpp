@@ -20,7 +20,7 @@ void montecarlo::run() {
 	int fault = 0;
 	//printf("random: ");
 	while (fault <= 1000) {
-		int randomNumber = rand() * 169 / (MAXINT + 1);
+		int randomNumber = rand() * (SIZE*SIZE) / (MAXINT + 1);
 		//printf("%d ", randomNumber);
 		int coordX = randomNumber / SIZE + 1;
 		int coordY = randomNumber % SIZE + 1;

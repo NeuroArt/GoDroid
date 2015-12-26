@@ -88,14 +88,14 @@ void board::clear_board(){
 
 void board::place(bool player, kaku*k){
 	k->c = player?black:white;
-	if ((k+1)->c!=border&&(k+1)->c!=empty)
-		(k+1)->findparent()->fakeliberty --;
-	if ((k-1)->c!=border&&(k-1)->c!=empty)
-		(k-1)->findparent()->fakeliberty --;
-	if ((k+SIZE+2)->c!=border&&(k+SIZE+2)->c!=empty)
-		(k+SIZE+2)->findparent()->fakeliberty --;
-	if ((k-(SIZE+2))->c!=border&&(k-(SIZE+2))->c!=empty)
-		(k-(SIZE+2))->findparent()->fakeliberty --;
+	if ((E(k))->c!=border&&(E(k))->c!=empty)
+		(E(k))->findparent()->fakeliberty --;
+	if ((W(k))->c!=border&&(W(k))->c!=empty)
+		(W(k))->findparent()->fakeliberty --;
+	if ((S(k))->c!=border&&(S(k))->c!=empty)
+		(S(k))->findparent()->fakeliberty --;
+	if ((N(k))->c!=border&&(N(k))->c!=empty)
+		(N(k))->findparent()->fakeliberty --;
 /*	emptycells->erase(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
@@ -108,14 +108,14 @@ bool board::deathtest(kaku* k){
 
 void board::kill(kaku* k){
 	k->c = empty;
-	if ((k+1)->c!=border&&(k+1)->c!=empty)
-		(k+1)->findparent()->fakeliberty ++;
-	if ((k-1)->c!=border&&(k-1)->c!=empty)
-		(k-1)->findparent()->fakeliberty ++;
-	if ((k+SIZE+2)->c!=border&&(k+SIZE+2)->c!=empty)
-		(k+SIZE+2)->findparent()->fakeliberty ++;
-	if ((k-(SIZE+2))->c!=border&&(k-(SIZE+2))->c!=empty)
-		(k-(SIZE+2))->findparent()->fakeliberty ++;
+	if ((E(k))->c!=border&&(E(k))->c!=empty)
+		(E(k))->findparent()->fakeliberty ++;
+	if ((W(k))->c!=border&&(W(k))->c!=empty)
+		(W(k))->findparent()->fakeliberty ++;
+	if ((S(k))->c!=border&&(S(k))->c!=empty)
+		(S(k))->findparent()->fakeliberty ++;
+	if ((N(k))->c!=border&&(N(k))->c!=empty)
+		(N(k))->findparent()->fakeliberty ++;
 /*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
@@ -130,22 +130,22 @@ void board::killall(kaku* k, cell state,int &total){
 /*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 	cell enemy = (state==white?black:white);
-	if ((k+1)->c==enemy)
-		(k+1)->findparent()->fakeliberty ++;
-	if ((k-1)->c==enemy)
-		(k-1)->findparent()->fakeliberty ++;
-	if ((k+SIZE+2)->c==enemy)
-		(k+SIZE+2)->findparent()->fakeliberty ++;
-	if ((k-(SIZE+2))->c==enemy)
-		(k-(SIZE+2))->findparent()->fakeliberty ++;
-	if ((k+1)->c==state)
-		killall(k+1,state,total);
-	if ((k-1)->c==state)
-		killall(k-1,state,total);
-	if ((k+SIZE+2)->c==state)
-		killall(k+SIZE+2,state,total);
-	if ((k-(SIZE+2))->c==state)
-		killall(k-(SIZE+2),state,total);
+	if ((E(k))->c==enemy)
+		(E(k))->findparent()->fakeliberty ++;
+	if ((W(k))->c==enemy)
+		(W(k))->findparent()->fakeliberty ++;
+	if ((S(k))->c==enemy)
+		(S(k))->findparent()->fakeliberty ++;
+	if ((N(k))->c==enemy)
+		(N(k))->findparent()->fakeliberty ++;
+	if ((E(k))->c==state)
+		killall(E(k),state,total);
+	if ((W(k))->c==state)
+		killall(W(k),state,total);
+	if ((S(k))->c==state)
+		killall(S(k),state,total);
+	if ((N(k))->c==state)
+		killall(N(k),state,total);
 }
 
 void board::showboard(){
@@ -226,7 +226,7 @@ int board::black_raw(){
     return black;
 }
 
-int board::judge(){
+float board::judge(){
 	int b=0;
 	int w=0;
 	for(int i=1;i<SIZE+1;++i){
@@ -237,7 +237,7 @@ int board::judge(){
 				w++;
 		}
 	}
-	return b-w;
+	return b-w-6.5;
 }
 
 bool board::play(bool& player,int coordx, int coordy, bool simulation){
@@ -245,44 +245,48 @@ bool board::play(bool& player,int coordx, int coordy, bool simulation){
 	cell enemy = player?white:black;
 	cell alley = player?black:white;
 	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
-	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
+	if (player == currentplayer && coordx==0 && coordy==0){
+		currentplayer = !currentplayer;
+		return true;
+	}
+	if (player != currentplayer||coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
 		return false;
 	}
-	if (simulation&&((target+1)->c==alley||(target+1)->c==border)&&((target-1)->c==alley||(target-1)->c==border)&&((target+SIZE+2)->c==alley||(target+SIZE+2)->c==border)&&((target-(SIZE+2))->c==alley||(target-(SIZE+2))->c==border))
+	if (simulation&&((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
 		return false;
 
 	place(player,target);
 	int total = 0;
-	if ((target+1)->c==enemy&&deathtest(target+1))
-		killall(target+1,enemy,total);
-	if ((target-1)->c==enemy&&deathtest(target-1))
-		killall(target-1,enemy,total);
-	if ((target+SIZE+2)->c==enemy&&deathtest(target+SIZE+2))
-		killall(target+SIZE+2,enemy,total);
-	if ((target-(SIZE+2))->c==enemy&&deathtest(target-(SIZE+2)))
-		killall(target-(SIZE+2),enemy,total);
+	if ((E(target))->c==enemy&&deathtest(E(target)))
+		killall(E(target),enemy,total);
+	if ((W(target))->c==enemy&&deathtest(W(target)))
+		killall(W(target),enemy,total);
+	if ((S(target))->c==enemy&&deathtest(S(target)))
+		killall(S(target),enemy,total);
+	if ((N(target))->c==enemy&&deathtest(N(target)))
+		killall(N(target),enemy,total);
 	if (total != 1){
 		ko_i = -1;
 		ko_j = -1;
 	}
 	//printf("%d %d %d\n",total,ko_i,ko_j);
-	bool flag1 = (target+1)->c==empty||((target+1)->c==alley&&(target+1)->findliberty()!=0);
-	bool flag2 = (target-1)->c==empty||((target-1)->c==alley&&(target-1)->findliberty()!=0);
-	bool flag3 = (target+SIZE+2)->c==empty||((target+SIZE+2)->c==alley&&(target+SIZE+2)->findliberty()!=0);
-	bool flag4 = (target-(SIZE+2))->c==empty||((target-(SIZE+2))->c==alley&&(target-(SIZE+2))->findliberty()!=0);
+	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
+	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
+	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
+	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
 	if (!flag1&&!flag2&&!flag3&&!flag4){
 		kill(target);
 		return false;
 	}
-	target->fakeliberty = ((target+1)->c==empty)+((target-1)->c==empty)+((target+SIZE+2)->c==empty)+((target-(SIZE+2))->c==empty);
-	if((target+1)->c==alley)
-		kaku::Union(target,target+1);
-	if((target-1)->c==alley)
-		kaku::Union(target,target-1);
-	if((target+(SIZE+2))->c==alley)
-		kaku::Union(target,target+(SIZE+2));
-	if((target-(SIZE+2))->c==alley)
-		kaku::Union(target,target-(SIZE+2));
+	target->fakeliberty = ((E(target))->c==empty)+((W(target))->c==empty)+((S(target))->c==empty)+((N(target))->c==empty);
+	if((E(target))->c==alley)
+		kaku::Union(target,E(target));
+	if((W(target))->c==alley)
+		kaku::Union(target,W(target));
+	if((S(target))->c==alley)
+		kaku::Union(target,S(target));
+	if((N(target))->c==alley)
+		kaku::Union(target,N(target));
 	currentplayer = !currentplayer;
 	return true;
 }
@@ -318,4 +322,31 @@ void board::set_final_status(int i, int j, int status){
 
 int board::get_final_status(int i, int j){
 	return goban[i][j].get_final_status();
+}
+
+std::vector<int> board::get_valid_set(){
+	std::vector<int> validset;
+	for(int coordx=1;coordx<SIZE+1;++coordx)
+		for(int coordy=1;coordy<SIZE+1;++coordy){
+			kaku* target = &goban[coordx][coordy];
+			cell enemy = currentplayer?white:black;
+			cell alley = currentplayer?black:white;
+			if (target->c!=empty||(coordx==ko_i&&coordy==ko_j))
+				continue;
+			if (((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
+				continue;
+			if (((E(target))->c==enemy&&(E(target))->findliberty()==1)||((W(target))->c==enemy&&(W(target))->findliberty()==1)||((S(target))->c==enemy&&(S(target))->findliberty()==1)||((N(target))->c==enemy&&(N(target))->findliberty()==1)){
+				validset.push_back((coordx-1)*13+coordy);
+				continue;
+			}
+			//printf("%d %d %d\n",total,ko_i,ko_j);
+			bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
+			bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
+			bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
+			bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
+			if (!flag1&&!flag2&&!flag3&&!flag4)
+				continue;
+			validset.push_back((coordx-1)*13+coordy);
+		}
+	return validset;
 }

@@ -144,7 +144,7 @@ gtp_boardsize(char *s)
   if (sscanf(s, "%d", &boardsize) < 1)
     return gtp_failure("boardsize not an integer");
 
-  if (boardsize < 13 || boardsize > 13)
+  if (boardsize < SIZE || boardsize > SIZE)
     return gtp_failure("unacceptable size");
 
   gtp_internal_set_boardsize(boardsize);

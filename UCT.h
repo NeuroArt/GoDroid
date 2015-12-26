@@ -174,27 +174,15 @@ public:
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			int fail = 0;
+			int a=0;
 			board currentBoard(getBoard(p));
-			for (int randomNumber = 0; randomNumber < 169; ++randomNumber) {
+			std::vector<int>validset = getBoard(p).get_valid_set();
+			std::vector<int>::iterator iter;
+			for (iter=validset.begin();iter!=validset.end();iter++){
 				Node *tmp = new Node();
-				board tmpBoard(currentBoard);
-				int coordX = randomNumber / SIZE + 1;
-				int coordY = randomNumber % SIZE + 1;
-				tmp->move = randomNumber;
-				bool flag = tmpBoard.getcurrentplayer();
-				tmp->player = flag;
-				if (tmpBoard.play(flag, coordX, coordY)) {
-					p->addChild(tmp);
-				}
-				else {
-					//printf("~~~~~~~~~~~~~~~~~~~~~\n");
-					//printf("%d\n", tmp->move);
-					//printf("~~~~~~~~~~~~~~~~~~~~~\n");
-					delete tmp;
-					//fail++;
-					//tmp->sibling = garbage;
-					//garbage = tmp;
-				}
+				int pos = *iter;
+				tmp->move = pos-1;
+				p->addChild(tmp);
 			}
 		}
 	}
@@ -225,7 +213,6 @@ public:
 			update(p, m.getWinner());
 		}
 		else {
-			assert(0);
 			board currentBoard(getBoard(p->parent));
 			montecarlo m(currentBoard);
 			update(p->parent, m.getWinner());
