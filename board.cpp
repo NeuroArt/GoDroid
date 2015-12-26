@@ -240,7 +240,7 @@ int board::judge(){
 	return b-w;
 }
 
-bool board::play(bool& player,int coordx, int coordy){
+bool board::play(bool& player,int coordx, int coordy, bool simulation){
 	kaku* target = &goban[coordx][coordy];
 	cell enemy = player?white:black;
 	cell alley = player?black:white;
@@ -248,7 +248,7 @@ bool board::play(bool& player,int coordx, int coordy){
 	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
 		return false;
 	}
-	if (((target+1)->c==alley||(target+1)->c==border)&&((target-1)->c==alley||(target-1)->c==border)&&((target+SIZE+2)->c==alley||(target+SIZE+2)->c==border)&&((target-(SIZE+2))->c==alley||(target-(SIZE+2))->c==border))
+	if (simulation&&((target+1)->c==alley||(target+1)->c==border)&&((target-1)->c==alley||(target-1)->c==border)&&((target+SIZE+2)->c==alley||(target+SIZE+2)->c==border)&&((target-(SIZE+2))->c==alley||(target-(SIZE+2))->c==border))
 		return false;
 
 	place(player,target);

@@ -175,7 +175,7 @@ void play_move(int i, int j, int color){
 	int posX = mov / SIZE + 1;
 	int posY = mov % SIZE + 1;
 	bool flag = brd->getcurrentplayer();
-	assert(brd->play(flag, posX, posY));
+	assert(brd->play(flag, posX, posY, false));
 }
 
 int get_final_status(int i, int j){return brd->get_final_status(i+1, j+1);}
