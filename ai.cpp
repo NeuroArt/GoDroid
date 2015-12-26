@@ -4,7 +4,7 @@
 
 board *brd;
 int board_size = SIZE;
-float komi = 3.14;
+double komi = 3.14;
 int ko_i, ko_j;//illeagal ko point
 
 static int on_board(int i, int j){return i >= 0 && i < board_size && j >= 0 && j < board_size;};
@@ -164,6 +164,7 @@ void generate_move(int *i, int *j, int color) {
 		finishTime = clock();
 		cnt++;
 	}
+	printf("cnt: %d\n", cnt);
 	int mov = tree.getNextMove();
 	*i = mov/SIZE;
 	*j = mov%SIZE;
@@ -174,7 +175,7 @@ void play_move(int i, int j, int color){
 	int posX = mov / SIZE + 1;
 	int posY = mov % SIZE + 1;
 	bool flag = brd->getcurrentplayer();
-	brd->play(flag, posX, posY);
+	assert(brd->play(flag, posX, posY));
 }
 
 int get_final_status(int i, int j){return brd->get_final_status(i+1, j+1);}

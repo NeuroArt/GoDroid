@@ -14,7 +14,7 @@ public:
 	~montecarlo();
 	void getInitBoard(board &inBoard);
 	void run();
-	int getWinner();
+	bool getWinner();
 };
 
 #endif

@@ -242,11 +242,15 @@ int board::judge(){
 
 bool board::play(bool& player,int coordx, int coordy){
 	kaku* target = &goban[coordx][coordy];
+	cell enemy = player?white:black;
+	cell alley = player?black:white;
 	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
 	if (player != currentplayer||coordx<1||coordx>13||coordy<1||coordy>13||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
 		return false;
 	}
-	cell enemy = player?white:black;
+	if (((target+1)->c==alley||(target+1)->c==border)&&((target-1)->c==alley||(target-1)->c==border)&&((target+SIZE+2)->c==alley||(target+SIZE+2)->c==border)&&((target-(SIZE+2))->c==alley||(target-(SIZE+2))->c==border))
+		return false;
+
 	place(player,target);
 	int total = 0;
 	if ((target+1)->c==enemy&&deathtest(target+1))
@@ -262,7 +266,6 @@ bool board::play(bool& player,int coordx, int coordy){
 		ko_j = -1;
 	}
 	//printf("%d %d %d\n",total,ko_i,ko_j);
-	cell alley = player?black:white;
 	bool flag1 = (target+1)->c==empty||((target+1)->c==alley&&(target+1)->findliberty()!=0);
 	bool flag2 = (target-1)->c==empty||((target-1)->c==alley&&(target-1)->findliberty()!=0);
 	bool flag3 = (target+SIZE+2)->c==empty||((target+SIZE+2)->c==alley&&(target+SIZE+2)->findliberty()!=0);

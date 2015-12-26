@@ -50,7 +50,7 @@ static struct gtp_command commands[] = {
 
 
 extern int board_size;
-extern float komi;
+extern double komi;
 
 int
 main(int argc, char **argv) 

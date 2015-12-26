@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stack>
 #include <assert.h>
+#include <queue>
+#include <fstream>
 #include "board.h"
 #include "montecarlo.h"
 #define largeFloat 1000000000000.0
@@ -14,8 +16,8 @@ class UCT {
 private:
 	struct Node {
 		int win, total;
-		float value() {
-			return float(win) / total;
+		double value() {
+			return double(win) / total;
 		}
 		Node *parent, *lchild, *sibling;
 		//board currentBoard;
@@ -32,10 +34,14 @@ private:
 			player = 1;
 			move = 0;
 		}
-		//explore_coeff = 2 * ln(Total Simulations)
-		float getUCBValue(float explore_coeff) {
+		double V(double explore_coeff) {
+			//printf("Tn: %d Total: %d ", Tn, total);
+			return value() - value() * value() + sqrt(2 * explore_coeff / total);
+		}
+		double getUCBValue(double explore_coeff, double newValue) {
 			if (total == 0) return largeFloat;
-			return value() + sqrt(explore_coeff / total);
+			//printf("V: %f\n", V(explore_coeff));
+			return value() + sqrt(explore_coeff / total * min(0.25, V(explore_coeff)));
 		}
 		void addChild(Node *newChild) {
 			if (lchild == NULL) {
@@ -87,11 +93,19 @@ private:
 		}
 		Node* findBestChild() {
 			Node* bestChild = NULL;
-			float explore_coeff = log(total) * 2;
-			float bestUrgency = -largeFloat;
+			double explore_coeff = log(total);
+			
+			double bestUrgency = -largeFloat;
+			double newValue;
+			if (total)
+				newValue = V(total);
+			else newValue = largeFloat;
 			Node *p = lchild;
 			while (p != NULL) {
-				float childUrgency = p->getUCBValue(explore_coeff);
+				
+				//printf("newValue: %f", newValue);
+				double childUrgency = p->getUCBValue(explore_coeff, newValue);
+				
 				if (childUrgency > bestUrgency) {
 					bestUrgency = childUrgency;
 					bestChild = p;
@@ -102,11 +116,12 @@ private:
 		}
 		bool removeWorstChild() {
 			Node *worstChild = NULL;
-			float worstUrgency = largeFloat;
-			float explore_coeff = 2 * log(total);
+			double worstUrgency = largeFloat;
+			double explore_coeff = 2 * log(total);
 			Node *p = lchild;
 			while (p != NULL) {
-				float childUrgency = p->getUCBValue(explore_coeff);
+				double newValue = V(p->total);
+				double childUrgency = p->getUCBValue(explore_coeff, newValue);
 				if (childUrgency < worstUrgency) {
 					worstUrgency = childUrgency;
 					worstChild = p;
@@ -121,12 +136,10 @@ private:
 	};
 	Node *root;
 	board rootBoard;
-	Node *garbage;
 public:
 	UCT(board &inBoard) {
 		root = new Node;
 		rootBoard = inBoard;
-		garbage = new Node;
 	}
 	~UCT() {
 		root->freeSubtree(root);
@@ -224,26 +237,20 @@ public:
 	}
 	void showTree(bool flag = 1) {
 		Node *p = root;
-		int level = 0;
-		while (p != NULL) {
-			printf("level-%d ", level++);
-			Node* sib = p;
-			int levelNum = 0;
-			while (sib != NULL) {
-				if (flag)
-					printf("%d/%d ", sib->win, sib->total);
-				else {
-					if (sib->total == 0) {
-						sib = sib->sibling;
-						continue;
-					}
-					levelNum++;
-					printf("%d/%d ", sib->win, sib->total);
-				}
-				sib = sib->sibling;
+		queue<Node *> q;
+		q.push(p);
+		ofstream out("log.txt");
+		while (!q.empty()) {
+			p = q.front();
+			q.pop();
+			if (p->total)
+				//printf("%d/%d ", p->win, p->total);
+				out << p->win << '/' << p->total << ' ';
+			Node *tmp = p->lchild;
+			while (tmp != NULL) {
+				q.push(tmp);
+				tmp = tmp->sibling;
 			}
-			printf("%d\n", levelNum);
-			p = p->lchild;
 		}
 	}
 	void showTotal() {

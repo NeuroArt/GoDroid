@@ -16,11 +16,12 @@ void montecarlo::getInitBoard(board &inBoard) {
 }
 
 void montecarlo::run() {
-	srand((unsigned)time(NULL));
 	int step = 0;
 	int fault = 0;
+	//printf("random: ");
 	while (fault <= 1000) {
 		int randomNumber = rand() * 169 / (MAXINT + 1);
+		//printf("%d ", randomNumber);
 		int coordX = randomNumber / SIZE + 1;
 		int coordY = randomNumber % SIZE + 1;
 		bool flag = currentBoard.getcurrentplayer();
@@ -30,11 +31,11 @@ void montecarlo::run() {
 		else {
 			fault++;
 		}
-		if(fault >= 50) break;
 	}
+	//printf("\n");
 	winner = currentBoard.judge() > 0?1:0;
 }
 
-int montecarlo::getWinner() {
+bool montecarlo::getWinner() {
 	return winner;
 }
