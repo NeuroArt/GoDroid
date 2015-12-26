@@ -93,7 +93,7 @@ private:
 		}
 		Node* findBestChild() {
 			Node* bestChild = NULL;
-			double explore_coeff = log(total);
+			double explore_coeff = log(double(total));
 			
 			double bestUrgency = -largeFloat;
 			double newValue;
@@ -117,7 +117,7 @@ private:
 		bool removeWorstChild() {
 			Node *worstChild = NULL;
 			double worstUrgency = largeFloat;
-			double explore_coeff = 2 * log(total);
+			double explore_coeff = 2 * log(double(total));
 			Node *p = lchild;
 			while (p != NULL) {
 				double newValue = V(p->total);
