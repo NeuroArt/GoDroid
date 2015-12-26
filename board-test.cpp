@@ -2,6 +2,7 @@
 #include <random>
 #include <string>
 #include <ctime>
+#include <set>
 using namespace std;
 #include "board.h"
 

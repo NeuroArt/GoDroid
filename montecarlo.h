@@ -1,20 +1,20 @@
 #ifndef _MONTECARLO_H
 #define _MONTECARLO_H
 
-#include "testBoard.h"
+#include "board.h"
 
 #define MAXINT 32767
 
 class montecarlo {
 private:
 	board currentBoard;
-	int winner;
+	bool winner;
 public:
-	montecarlo(board inBoard);
+	montecarlo(board &inBoard);
 	~montecarlo();
-	void getInitBoard(board inBoard);
+	void getInitBoard(board &inBoard);
 	void run();
-	int getWinner();
+	bool getWinner();
 };
 
 #endif
