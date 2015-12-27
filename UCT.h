@@ -32,7 +32,7 @@ private:
 			lchild = NULL;
 			sibling = NULL;
 			player = 1;
-			move = 0;
+			move = -1;
 		}
 		double V(double explore_coeff) {
 			//printf("Tn: %d Total: %d ", Tn, total);
@@ -196,7 +196,6 @@ public:
 	void playOneSequenceInMoGo() {
 		Node* p = root;
 		createAllChildrenIfNone(p);
-		//showTree(0);
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
@@ -226,13 +225,13 @@ public:
 		Node *p = root;
 		queue<Node *> q;
 		q.push(p);
-		ofstream out("log.txt");
+		ofstream out("log.txt",ios::out);
 		while (!q.empty()) {
 			p = q.front();
 			q.pop();
 			if (p->total)
 				//printf("%d/%d ", p->win, p->total);
-				out << p->win << '/' << p->total << ' ';
+				out <<"move"<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);
