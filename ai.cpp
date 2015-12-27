@@ -63,7 +63,7 @@ int valid_fixed_handicap(int handicap)
 
 void place_fixed_handicap(int handicap)
 {
-  int low = board_size >= 13 ? 3 : 2;
+  int low = board_size >= SIZE ? 3 : 2;
   int mid = board_size / 2;
   int high = board_size - 1 - low;
 
@@ -164,8 +164,9 @@ void generate_move(int *i, int *j, int color) {
 		finishTime = clock();
 		cnt++;
 	}
-	printf("cnt: %d\n", cnt);
+	//printf("cnt: %d\n", cnt);
 	int mov = tree.getNextMove();
+	tree.showTree(0);
 	*i = mov/SIZE;
 	*j = mov%SIZE;
 }
@@ -175,7 +176,7 @@ void play_move(int i, int j, int color){
 	int posX = mov / SIZE + 1;
 	int posY = mov % SIZE + 1;
 	bool flag = brd->getcurrentplayer();
-	assert(brd->play(flag, posX, posY, false));
+	brd->play(flag, posX, posY, false);
 }
 
 int get_final_status(int i, int j){return brd->get_final_status(i+1, j+1);}

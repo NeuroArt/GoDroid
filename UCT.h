@@ -32,7 +32,7 @@ private:
 			lchild = NULL;
 			sibling = NULL;
 			player = 1;
-			move = 0;
+			move = -1;
 		}
 		double V(double explore_coeff) {
 			//printf("Tn: %d Total: %d ", Tn, total);
@@ -174,27 +174,15 @@ public:
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			int fail = 0;
+			int a=0;
 			board currentBoard(getBoard(p));
-			for (int randomNumber = 0; randomNumber < 169; ++randomNumber) {
+			std::vector<int>validset = getBoard(p).get_valid_set();
+			std::vector<int>::iterator iter;
+			for (iter=validset.begin();iter!=validset.end();iter++){
 				Node *tmp = new Node();
-				board tmpBoard(currentBoard);
-				int coordX = randomNumber / SIZE + 1;
-				int coordY = randomNumber % SIZE + 1;
-				tmp->move = randomNumber;
-				bool flag = tmpBoard.getcurrentplayer();
-				tmp->player = flag;
-				if (tmpBoard.play(flag, coordX, coordY)) {
-					p->addChild(tmp);
-				}
-				else {
-					//printf("~~~~~~~~~~~~~~~~~~~~~\n");
-					//printf("%d\n", tmp->move);
-					//printf("~~~~~~~~~~~~~~~~~~~~~\n");
-					delete tmp;
-					//fail++;
-					//tmp->sibling = garbage;
-					//garbage = tmp;
-				}
+				int pos = *iter;
+				tmp->move = pos-1;
+				p->addChild(tmp);
 			}
 		}
 	}
@@ -208,7 +196,6 @@ public:
 	void playOneSequenceInMoGo() {
 		Node* p = root;
 		createAllChildrenIfNone(p);
-		//showTree(0);
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
@@ -225,7 +212,6 @@ public:
 			update(p, m.getWinner());
 		}
 		else {
-			assert(0);
 			board currentBoard(getBoard(p->parent));
 			montecarlo m(currentBoard);
 			update(p->parent, m.getWinner());
@@ -239,13 +225,13 @@ public:
 		Node *p = root;
 		queue<Node *> q;
 		q.push(p);
-		ofstream out("log.txt");
+		ofstream out("log.txt",ios::out);
 		while (!q.empty()) {
 			p = q.front();
 			q.pop();
 			if (p->total)
 				//printf("%d/%d ", p->win, p->total);
-				out << p->win << '/' << p->total << ' ';
+				out <<"move"<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);

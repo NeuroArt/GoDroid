@@ -2,6 +2,7 @@
 #define _BOARD_H_
 
 #include <iostream>
+#include <vector>
 //#include <set>
 #define SIZE 13
 
@@ -15,6 +16,11 @@
 #define POS(i, j) ((i-1) * board_size + (j-1))
 #define I(pos) (((pos) / board_size) + 1)
 #define J(pos) (((pos) % board_size) + 1)
+
+#define N(pos) pos-(SIZE+2)
+#define S(pos) pos+(SIZE+2)
+#define W(pos) pos-1
+#define E(pos) pos+1
 
 static int offset_x[4] = {-1, 1, 0, 0};
 static int offset_y[4] = {0, 0, -1, 1};
@@ -69,7 +75,6 @@ public:
 	cell get_cell(int i, int j);
 	void clear_board();
 	int board_empty();
-	//void genmove(); 未实现，返回类型未确定
 	//void final_score(); 未实现，返回类型未确定
 	//void compute_final_status();
 	//int has_additional_liberty(int i, int j, int libi, int libj){return 0;}
@@ -77,13 +82,14 @@ public:
     int black_raw();//贴目前黑的总子数
 	void showboard();
 	void showboard(char *str);
-	int judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
+	float judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
 	bool getcurrentplayer(){return currentplayer;}
 	//std::set<int>* getemptycells(); //function cancelled
 	bool play(bool& player,int coordx, int coordy, bool simulation=true);
 	int get_final_status(int i, int j);
 	void set_final_status(int i, int j, int status);
 	short find_liberty(int i, int j){return goban[i][j].findliberty();}
+	std::vector<int> get_valid_set();//返回值范围为1-169，不是0-168，望注意。
 };
 
 #endif
