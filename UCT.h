@@ -38,7 +38,7 @@ private:
 			//printf("Tn: %d Total: %d ", Tn, total);
 			return value() - value() * value() + sqrt(2 * explore_coeff / total);
 		}
-		double getUCBValue(double explore_coeff, double newValue) {
+		double getUCBValue(double explore_coeff) {
 			if (total == 0) return largeFloat;
 			//printf("V: %f\n", V(explore_coeff));
 			return value() + sqrt(explore_coeff / total * min(0.25, V(explore_coeff)));
@@ -97,14 +97,12 @@ private:
 			
 			double bestUrgency = -largeFloat;
 			double newValue;
-			if (total)
-				newValue = V(total);
-			else newValue = largeFloat;
+			
 			Node *p = lchild;
 			while (p != NULL) {
 				
 				//printf("newValue: %f", newValue);
-				double childUrgency = p->getUCBValue(explore_coeff, newValue);
+				double childUrgency = p->getUCBValue(explore_coeff);
 				
 				if (childUrgency > bestUrgency) {
 					bestUrgency = childUrgency;
