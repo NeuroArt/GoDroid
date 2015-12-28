@@ -3,14 +3,13 @@
 
 #include "board.h"
 
-#define MAXINT 32767
-
 class montecarlo {
 private:
 	board currentBoard;
+	bool player;
 	bool winner;
 public:
-	montecarlo(board &inBoard);
+	montecarlo(board &inBoard,bool bplayer);
 	~montecarlo();
 	void getInitBoard(board &inBoard);
 	void run();

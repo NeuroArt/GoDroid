@@ -4,8 +4,9 @@
 #include <time.h>
 #include <stdio.h>
 
-montecarlo::montecarlo(board &inBoard) {
+montecarlo::montecarlo(board &inBoard,bool bplayer) {
 	getInitBoard(inBoard);
+	player = bplayer;
 	run();
 }
 
@@ -20,12 +21,11 @@ void montecarlo::run() {
 	int fault = 0;
 	//printf("random: ");
 	while (fault <= 1000) {
-		int randomNumber = rand() * (SIZE*SIZE) / (MAXINT + 1);
+		int randomNumber = rand() * (SIZE*SIZE) / (RAND_MAX + 1);
 		//printf("%d ", randomNumber);
 		int coordX = randomNumber / SIZE + 1;
 		int coordY = randomNumber % SIZE + 1;
-		bool flag = currentBoard.getcurrentplayer();
-		if (currentBoard.play(flag, coordX, coordY)) {
+		if (currentBoard.play(player, coordX, coordY)) {
 			step++;
 		}
 		else {

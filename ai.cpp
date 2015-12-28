@@ -159,8 +159,9 @@ void generate_move(int *i, int *j, int color) {
 	int startTime = clock();
 	int finishTime = clock();
 	int cnt = 0;
+	bool player = color==BLACK?true:false;
 	while(finishTime - startTime < 2500) {
-		tree.playOneSequenceInMoGo();
+		tree.playOneSequenceInMoGo(player);
 		finishTime = clock();
 		cnt++;
 	}
@@ -175,7 +176,7 @@ void play_move(int i, int j, int color){
 	int mov = i*SIZE + j;
 	int posX = mov / SIZE + 1;
 	int posY = mov % SIZE + 1;
-	bool flag = brd->getcurrentplayer();
+	bool flag = color==BLACK?true:false;
 	brd->play(flag, posX, posY, false);
 }
 

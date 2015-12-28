@@ -83,11 +83,11 @@ public:
 	void showboard(char *str);
 	float judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
 	//std::set<int>* getemptycells(); //function cancelled
-	bool play(bool& player,bool currentplayer,int coordx, int coordy, bool simulation=true);
+	bool play(bool player,int coordx, int coordy, bool simulation=true);
 	int get_final_status(int i, int j);
 	void set_final_status(int i, int j, int status);
 	short find_liberty(int i, int j){return goban[i][j].findliberty();}
-	std::vector<int> get_valid_set(bool currentplayer);//返回值范围为1-169，不是0-168，望注意。
+	std::vector<int> get_valid_set(bool player);//返回值范围为1-169，不是0-168，望注意。
 };
 
 #endif

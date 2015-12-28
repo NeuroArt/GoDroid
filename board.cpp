@@ -237,16 +237,15 @@ float board::judge(){
 	return b-w-6.5;
 }
 
-bool board::play(bool& player,bool currentplayer,int coordx, int coordy, bool simulation){
+bool board::play(bool player,int coordx, int coordy, bool simulation){
 	kaku* target = &goban[coordx][coordy];
 	cell enemy = player?white:black;
 	cell alley = player?black:white;
 	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
-	if (player == currentplayer && coordx==0 && coordy==0){
-		currentplayer = !currentplayer;
+	if (coordx==0 && coordy==0){
 		return true;
 	}
-	if (player != currentplayer||coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
+	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){ //ignoring the situation of "pass"
 		return false;
 	}
 	if (simulation&&((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
@@ -319,13 +318,13 @@ int board::get_final_status(int i, int j){
 	return goban[i][j].get_final_status();
 }
 
-std::vector<int> board::get_valid_set(bool currentplayer){
+std::vector<int> board::get_valid_set(bool player){
 	std::vector<int> validset;
 	for(int coordx=1;coordx<SIZE+1;++coordx)
 		for(int coordy=1;coordy<SIZE+1;++coordy){
 			kaku* target = &goban[coordx][coordy];
-			cell enemy = currentplayer?white:black;
-			cell alley = currentplayer?black:white;
+			cell enemy = player?white:black;
+			cell alley = player?black:white;
 			if (target->c!=empty||(coordx==ko_i&&coordy==ko_j))
 				continue;
 			if (((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
