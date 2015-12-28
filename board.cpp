@@ -36,7 +36,6 @@ board::board(){
 			goban[i][j].fakeliberty = 0;
 			goban[i][j].final_status = UNKNOWN;
 		}
-	currentplayer = true;
 	ko_i = -1;
 	ko_j = -1;
 // 	if (es==NULL){
@@ -57,7 +56,6 @@ board::board(const board& b){
 			goban[i][j].parent = &goban[0][0]+(b.goban[i][j].parent-&b.goban[0][0]);
 			//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
 		}
-	currentplayer = b.currentplayer;
 /*	emptycells = new std::set<int>(*b.emptycells);*/
 	ko_i = b.ko_i;
 	ko_j = b.ko_j;
@@ -78,7 +76,6 @@ void board::clear_board(){
 			goban[i][j].parent = &goban[i][j];
 			goban[i][j].fakeliberty = 0;
 		}
-	currentplayer = true;
 	ko_i = -1;
 	ko_j = -1;
 /*	emptycells->clear();*/
@@ -240,7 +237,7 @@ float board::judge(){
 	return b-w-6.5;
 }
 
-bool board::play(bool& player,int coordx, int coordy, bool simulation){
+bool board::play(bool& player,bool currentplayer,int coordx, int coordy, bool simulation){
 	kaku* target = &goban[coordx][coordy];
 	cell enemy = player?white:black;
 	cell alley = player?black:white;
@@ -287,7 +284,6 @@ bool board::play(bool& player,int coordx, int coordy, bool simulation){
 		kaku::Union(target,S(target));
 	if((N(target))->c==alley)
 		kaku::Union(target,N(target));
-	currentplayer = !currentplayer;
 	return true;
 }
 
@@ -300,7 +296,6 @@ board& board::operator=(const board& b){
 			goban[i][j].parent = &goban[0][0]+(b.goban[i][j].parent-&b.goban[0][0]);
 			//printf("%d %d\n",&goban[0][0],&b.goban[0][0]);
 		}
-		currentplayer = b.currentplayer;
 		/*	emptycells = new std::set<int>(*b.emptycells);*/
 		ko_i = b.ko_i;
 		ko_j = b.ko_j;
@@ -324,7 +319,7 @@ int board::get_final_status(int i, int j){
 	return goban[i][j].get_final_status();
 }
 
-std::vector<int> board::get_valid_set(){
+std::vector<int> board::get_valid_set(bool currentplayer){
 	std::vector<int> validset;
 	for(int coordx=1;coordx<SIZE+1;++coordx)
 		for(int coordy=1;coordy<SIZE+1;++coordy){
