@@ -53,7 +53,6 @@ class board{
 private:
 	static const int board_size = SIZE;
 	kaku goban[SIZE+2][SIZE+2];
-	bool currentplayer; //true=black; false=white
 /*	std::set<int> *emptycells;*/
 	int ko_i;
 	int ko_j;
@@ -83,13 +82,12 @@ public:
 	void showboard();
 	void showboard(char *str);
 	float judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
-	bool getcurrentplayer(){return currentplayer;}
 	//std::set<int>* getemptycells(); //function cancelled
-	bool play(bool& player,int coordx, int coordy, bool simulation=true);
+	bool play(bool player,int coordx, int coordy, bool simulation=true);
 	int get_final_status(int i, int j);
 	void set_final_status(int i, int j, int status);
 	short find_liberty(int i, int j){return goban[i][j].findliberty();}
-	std::vector<int> get_valid_set();//返回值范围为1-169，不是0-168，望注意。
+	std::vector<int> get_valid_set(bool player);//返回值范围为1-169，不是0-168，望注意。
 };
 
 #endif

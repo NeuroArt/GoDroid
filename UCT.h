@@ -96,12 +96,9 @@ private:
 			double explore_coeff = log(double(total));
 			
 			double bestUrgency = -largeFloat;
-			double newValue;
 			
 			Node *p = lchild;
 			while (p != NULL) {
-				
-				//printf("newValue: %f", newValue);
 				double childUrgency = p->getUCBValue(explore_coeff);
 				
 				if (childUrgency > bestUrgency) {
@@ -118,8 +115,7 @@ private:
 			double explore_coeff = 2 * log(double(total));
 			Node *p = lchild;
 			while (p != NULL) {
-				double newValue = V(p->total);
-				double childUrgency = p->getUCBValue(explore_coeff, newValue);
+				double childUrgency = p->getUCBValue(explore_coeff);
 				if (childUrgency < worstUrgency) {
 					worstUrgency = childUrgency;
 					worstChild = p;
@@ -148,7 +144,7 @@ public:
 			delete p;
 		}*/
 	}
-	board getBoard(Node *p) {
+	board getBoard(Node *p,bool player) {
 		board currentBoard(rootBoard);
 		stack<int> back;
 		Node *q = p;
@@ -159,7 +155,6 @@ public:
 		if (!back.empty())
 			back.pop();
 		while (!back.empty()) {
-			bool player = currentBoard.getcurrentplayer();
 			int num = back.top();
 			back.pop();
 			int coordX = num / SIZE + 1;
@@ -168,13 +163,13 @@ public:
 		}
 		return currentBoard;
 	}
-	void createAllChildrenIfNone(Node *p) {
+	void createAllChildrenIfNone(Node *p,bool player) {
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			int fail = 0;
 			int a=0;
-			board currentBoard(getBoard(p));
-			std::vector<int>validset = getBoard(p).get_valid_set();
+			board currentBoard(getBoard(p,player));
+			std::vector<int>validset = getBoard(p,player).get_valid_set(player);
 			std::vector<int>::iterator iter;
 			for (iter=validset.begin();iter!=validset.end();iter++){
 				Node *tmp = new Node();
@@ -191,27 +186,27 @@ public:
 			s = s->parent;
 		}
 	}
-	void playOneSequenceInMoGo() {
+	void playOneSequenceInMoGo(bool player) {
 		Node* p = root;
-		createAllChildrenIfNone(p);
+		createAllChildrenIfNone(p,player);
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
 			if (p != NULL && p->isLeaf()) {
 				if (p->total == 0) break;
-				createAllChildrenIfNone(p);
+				createAllChildrenIfNone(p,player);
 				p = p->findBestChild();
 				break;
 			}
 		} while (1);
 		if (p != NULL) {
-			board currentBoard(getBoard(p));
-			montecarlo m(currentBoard);
+			board currentBoard(getBoard(p,player));
+			montecarlo m(currentBoard,player);
 			update(p, m.getWinner());
 		}
 		else {
-			board currentBoard(getBoard(p->parent));
-			montecarlo m(currentBoard);
+			board currentBoard(getBoard(p->parent,player));
+			montecarlo m(currentBoard,player);
 			update(p->parent, m.getWinner());
 		}	
 	}
