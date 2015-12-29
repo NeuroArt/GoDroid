@@ -6,7 +6,7 @@
 
 montecarlo::montecarlo(board &inBoard,bool bplayer) {
 	getInitBoard(inBoard);
-	player = bplayer;
+	player = !bplayer;
 	run();
 }
 
@@ -26,7 +26,7 @@ void montecarlo::run() {
 		int coordX = randomNumber / SIZE + 1;
 		int coordY = randomNumber % SIZE + 1;
 		if (currentBoard.play(player, coordX, coordY)) {
-			step++;
+			player = !player;
 		}
 		else {
 			fault++;
