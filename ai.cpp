@@ -165,7 +165,7 @@ void generate_move(int *i, int *j, int color) {
 		finishTime = clock();
 		cnt++;
 	}
-	//printf("cnt: %d\n", cnt);
+	printf("cnt: %d\n", cnt);
 	int mov = tree.getNextMove();
 	tree.showTree(0);
 	*i = mov/SIZE;

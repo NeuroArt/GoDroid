@@ -234,7 +234,7 @@ float board::judge(){
 				w++;
 		}
 	}
-	return b-w-6.5;
+	return b-w;
 }
 
 bool board::play(bool player,int coordx, int coordy, bool simulation){

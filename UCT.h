@@ -41,7 +41,8 @@ private:
 		double getUCBValue(double explore_coeff) {
 			if (total == 0) return largeFloat;
 			//printf("V: %f\n", V(explore_coeff));
-			return value() + sqrt(explore_coeff / total * min(0.25, V(explore_coeff)));
+			//return value() + sqrt(explore_coeff / total * min(0.25, V(explore_coeff)));
+			return value() + sqrt(explore_coeff / total * 2);
 		}
 		void addChild(Node *newChild) {
 			if (lchild == NULL) {
@@ -227,7 +228,7 @@ public:
 			q.pop();
 			if (p->total)
 				//printf("%d/%d ", p->win, p->total);
-				out <<"move"<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
+				out <<"player:" << p->player<<" move "<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);
