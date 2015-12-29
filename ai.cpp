@@ -155,11 +155,11 @@ void set_final_status(int i, int j, int status){
 }
 
 void generate_move(int *i, int *j, int color) {
-	UCT tree(*brd);
+	bool player = color==BLACK?1:0;
+	UCT tree(*brd, player);
 	int startTime = clock();
 	int finishTime = clock();
 	int cnt = 0;
-	bool player = color==BLACK?true:false;
 	while(finishTime - startTime < 2500) {
 		tree.playOneSequenceInMoGo(player);
 		finishTime = clock();

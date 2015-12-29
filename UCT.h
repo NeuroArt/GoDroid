@@ -25,13 +25,13 @@ private:
 		bool player;
 		char color;
 
-		Node() {
+		Node(bool _play) {
 			win = 0;
 			total = 0;
 			parent = NULL;
 			lchild = NULL;
 			sibling = NULL;
-			player = 1;
+			player = _play;
 			move = -1;
 		}
 		double V(double explore_coeff) {
@@ -131,8 +131,8 @@ private:
 	Node *root;
 	board rootBoard;
 public:
-	UCT(board &inBoard) {
-		root = new Node;
+	UCT(board &inBoard, bool player) {
+		root = new Node(!player);
 		rootBoard = inBoard;
 	}
 	~UCT() {
@@ -144,7 +144,7 @@ public:
 			delete p;
 		}*/
 	}
-	board getBoard(Node *p,bool player) {
+	board getBoard(Node *p) {
 		board currentBoard(rootBoard);
 		stack<int> back;
 		Node *q = p;
@@ -152,6 +152,7 @@ public:
 			back.push(q->move);
 			q = q->parent;
 		}
+		bool player = root->player;
 		if (!back.empty())
 			back.pop();
 		while (!back.empty()) {
@@ -159,6 +160,7 @@ public:
 			back.pop();
 			int coordX = num / SIZE + 1;
 			int coordY = num % SIZE + 1;
+			player = !player;
 			currentBoard.play(player, coordX, coordY);
 		}
 		return currentBoard;
@@ -168,11 +170,12 @@ public:
 		if (p->lchild == NULL) {
 			int fail = 0;
 			int a=0;
-			board currentBoard(getBoard(p,player));
-			std::vector<int>validset = getBoard(p,player).get_valid_set(player);
+			board currentBoard(getBoard(p));
+			std::vector<int>validset = getBoard(p).get_valid_set(player);
 			std::vector<int>::iterator iter;
 			for (iter=validset.begin();iter!=validset.end();iter++){
-				Node *tmp = new Node();
+				bool tmpPlayer = !(p->player);
+				Node *tmp= new Node(tmpPlayer);
 				int pos = *iter;
 				tmp->move = pos-1;
 				p->addChild(tmp);
@@ -200,12 +203,12 @@ public:
 			}
 		} while (1);
 		if (p != NULL) {
-			board currentBoard(getBoard(p,player));
+			board currentBoard(getBoard(p));
 			montecarlo m(currentBoard,player);
 			update(p, m.getWinner());
 		}
 		else {
-			board currentBoard(getBoard(p->parent,player));
+			board currentBoard(getBoard(p->parent));
 			montecarlo m(currentBoard,player);
 			update(p->parent, m.getWinner());
 		}	
