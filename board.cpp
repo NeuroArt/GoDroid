@@ -334,10 +334,10 @@ std::vector<int> board::get_valid_set(bool player){
 				continue;
 			}
 			//printf("%d %d %d\n",total,ko_i,ko_j);
-			bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
-			bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
-			bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
-			bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
+			bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=1);
+			bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=1);
+			bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=1);
+			bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=1);
 			if (!flag1&&!flag2&&!flag3&&!flag4)
 				continue;
 			validset.push_back((coordx-1)*13+coordy);
