@@ -156,6 +156,7 @@ void set_final_status(int i, int j, int status){
 
 void generate_move(int *i, int *j, int color) {
 	bool player = color==BLACK?1:0;
+	brd->showboard();
 	UCT tree(*brd, player);
 	int startTime = clock();
 	int finishTime = clock();

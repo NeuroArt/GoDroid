@@ -1,4 +1,6 @@
 #include "board.h"
+#include <fstream>
+using namespace std;
 
 void kaku::Union(kaku* a,kaku* b){
 	kaku* pa = a->findparent();
@@ -146,22 +148,27 @@ void board::killall(kaku* k, cell state,int &total){
 }
 
 void board::showboard(){
-	printf("%c",' ');
+	ofstream fout("E:/log3.txt", ios::app);
+	//printf("%c",' ');
+	fout << ' ';
 	for(int i=1;i<SIZE+1;++i){
-		printf("%c",'a'+i-1);
+		//printf("%c",'a'+i-1);
+		fout << char('a' + i - 1) << ' ';
 	}
-	printf("\n");
+	//printf("\n");
+	fout << endl;
 	for(int i=1;i<SIZE+1;++i){
-		printf("%c",'A'+i-1);
+		//printf("%c",'A'+i-1);
+		fout << char('A' + i - 1) << ' ';
 		for(int j=1;j<SIZE+1;++j){
-			if(goban[i][j].c==empty||goban[i][j].c==border)
-				printf("%c",43);
-			if(goban[i][j].c==black)
-				printf("%c",'X');
-			if(goban[i][j].c==white)
-				printf("%c",'O');
+			if (goban[i][j].c == empty || goban[i][j].c == border)
+				fout << ". ";
+			if (goban[i][j].c == black)
+				fout << "X ";
+			if (goban[i][j].c == white)
+				fout << "O ";
 		}
-		printf("\n");
+		fout << endl;
 	}
 }
 
@@ -320,27 +327,27 @@ int board::get_final_status(int i, int j){
 
 std::vector<int> board::get_valid_set(bool player){
 	std::vector<int> validset;
-	for(int coordx=1;coordx<SIZE+1;++coordx)
-		for(int coordy=1;coordy<SIZE+1;++coordy){
-			kaku* target = &goban[coordx][coordy];
-			cell enemy = player?white:black;
-			cell alley = player?black:white;
-			if (target->c!=empty||(coordx==ko_i&&coordy==ko_j))
-				continue;
-			if (((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
-				continue;
-			if (((E(target))->c==enemy&&(E(target))->findliberty()==1)||((W(target))->c==enemy&&(W(target))->findliberty()==1)||((S(target))->c==enemy&&(S(target))->findliberty()==1)||((N(target))->c==enemy&&(N(target))->findliberty()==1)){
-				validset.push_back((coordx-1)*13+coordy);
-				continue;
-			}
-			//printf("%d %d %d\n",total,ko_i,ko_j);
-			bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
-			bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
-			bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
-			bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
-			if (!flag1&&!flag2&&!flag3&&!flag4)
-				continue;
-			validset.push_back((coordx-1)*13+coordy);
+	for (int coordx = 1; coordx<SIZE + 1; ++coordx)
+	for (int coordy = 1; coordy<SIZE + 1; ++coordy){
+		kaku* target = &goban[coordx][coordy];
+		cell enemy = player ? white : black;
+		cell alley = player ? black : white;
+		if (target->c != empty || (coordx == ko_i&&coordy == ko_j))
+			continue;
+		if (((E(target))->c == alley || (E(target))->c == border) && ((W(target))->c == alley || (W(target))->c == border) && ((S(target))->c == alley || (S(target))->c == border) && ((N(target))->c == alley || (N(target))->c == border))
+			continue;
+		if (((E(target))->c == enemy && (E(target))->findliberty() == 1) || ((W(target))->c == enemy && (W(target))->findliberty() == 1) || ((S(target))->c == enemy && (S(target))->findliberty() == 1) || ((N(target))->c == enemy && (N(target))->findliberty() == 1)){
+			validset.push_back((coordx - 1) * 13 + coordy);
+			continue;
 		}
+		//printf("%d %d %d\n",total,ko_i,ko_j);
+		bool flag1 = (E(target))->c == empty || ((E(target))->c == alley && (E(target))->findliberty() != 1);
+		bool flag2 = (W(target))->c == empty || ((W(target))->c == alley && (W(target))->findliberty() != 1);
+		bool flag3 = (S(target))->c == empty || ((S(target))->c == alley && (S(target))->findliberty() != 1);
+		bool flag4 = (N(target))->c == empty || ((N(target))->c == alley && (N(target))->findliberty() != 1);
+		if (!flag1&&!flag2&&!flag3&&!flag4)
+			continue;
+		validset.push_back((coordx - 1) * 13 + coordy);
+	}
 	return validset;
 }
