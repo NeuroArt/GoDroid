@@ -241,7 +241,7 @@ float board::judge(){
 				w++;
 		}
 	}
-	return b-w-6.5;
+	return b-w;
 }
 
 bool board::play(bool player,int coordx, int coordy, bool simulation){
@@ -327,6 +327,7 @@ int board::get_final_status(int i, int j){
 
 std::vector<int> board::get_valid_set(bool player){
 	std::vector<int> validset;
+<<<<<<< HEAD
 	for (int coordx = 1; coordx<SIZE + 1; ++coordx)
 	for (int coordy = 1; coordy<SIZE + 1; ++coordy){
 		kaku* target = &goban[coordx][coordy];
@@ -339,6 +340,29 @@ std::vector<int> board::get_valid_set(bool player){
 		if (((E(target))->c == enemy && (E(target))->findliberty() == 1) || ((W(target))->c == enemy && (W(target))->findliberty() == 1) || ((S(target))->c == enemy && (S(target))->findliberty() == 1) || ((N(target))->c == enemy && (N(target))->findliberty() == 1)){
 			validset.push_back((coordx - 1) * 13 + coordy);
 			continue;
+=======
+	for(int coordx=1;coordx<SIZE+1;++coordx)
+		for(int coordy=1;coordy<SIZE+1;++coordy){
+			kaku* target = &goban[coordx][coordy];
+			cell enemy = player?white:black;
+			cell alley = player?black:white;
+			if (target->c!=empty||(coordx==ko_i&&coordy==ko_j))
+				continue;
+			if (((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
+				continue;
+			if (((E(target))->c==enemy&&(E(target))->findliberty()==1)||((W(target))->c==enemy&&(W(target))->findliberty()==1)||((S(target))->c==enemy&&(S(target))->findliberty()==1)||((N(target))->c==enemy&&(N(target))->findliberty()==1)){
+				validset.push_back((coordx-1)*13+coordy);
+				continue;
+			}
+			//printf("%d %d %d\n",total,ko_i,ko_j);
+			bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=1);
+			bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=1);
+			bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=1);
+			bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=1);
+			if (!flag1&&!flag2&&!flag3&&!flag4)
+				continue;
+			validset.push_back((coordx-1)*13+coordy);
+>>>>>>> origin/development-area
 		}
 		//printf("%d %d %d\n",total,ko_i,ko_j);
 		bool flag1 = (E(target))->c == empty || ((E(target))->c == alley && (E(target))->findliberty() != 1);

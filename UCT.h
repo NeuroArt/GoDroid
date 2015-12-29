@@ -234,7 +234,11 @@ public:
 			q.pop();
 			if (p->total)
 				//printf("%d/%d ", p->win, p->total);
+<<<<<<< HEAD
 				out <<"player" << p->player <<" move " << (p->move)/13+1<<' '<<(p->move)%13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total << "UCB Value: " << p->ucbValue <<endl;
+=======
+				out <<"player:" << p->player<<" move "<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
+>>>>>>> origin/development-area
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);
