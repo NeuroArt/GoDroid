@@ -17,7 +17,6 @@ void montecarlo::getInitBoard(board &inBoard) {
 }
 
 void montecarlo::run() {
-	int step = 0;
 	int fault = 0;
 	//printf("random: ");
 	while (fault <= 1000) {

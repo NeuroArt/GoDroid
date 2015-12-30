@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include <vector>
+#include <stdio.h>
 //#include <set>
+
 #define SIZE 13
 
 #define DEAD 0
@@ -81,6 +83,7 @@ public:
     int black_raw();//贴目前黑的总子数
 	void showboard();
 	void showboard(char *str);
+	void showboardtofile();
 	float judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
 	//std::set<int>* getemptycells(); //function cancelled
 	bool play(bool player,int coordx, int coordy, bool simulation=true);
