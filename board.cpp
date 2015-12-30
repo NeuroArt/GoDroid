@@ -1,4 +1,6 @@
 #include "board.h"
+#include <fstream>
+using namespace std;
 
 void kaku::Union(kaku* a,kaku* b){
 	kaku* pa = a->findparent();
@@ -138,22 +140,27 @@ void board::killall(kaku* k, cell state,int &total){
 }
 
 void board::showboard(){
-	printf("%c",' ');
+	ofstream fout("E:/log3.txt", ios::app);
+	//printf("%c",' ');
+	fout << ' ';
 	for(int i=1;i<SIZE+1;++i){
-		printf("%c",'a'+i-1);
+		//printf("%c",'a'+i-1);
+		fout << char('a' + i - 1) << ' ';
 	}
-	printf("\n");
+	//printf("\n");
+	fout << endl;
 	for(int i=1;i<SIZE+1;++i){
-		printf("%c",'A'+i-1);
+		//printf("%c",'A'+i-1);
+		fout << char('A' + i - 1) << ' ';
 		for(int j=1;j<SIZE+1;++j){
-			if(goban[i][j].c==empty||goban[i][j].c==border)
-				printf("%c",43);
-			if(goban[i][j].c==black)
-				printf("%c",'X');
-			if(goban[i][j].c==white)
-				printf("%c",'O');
+			if (goban[i][j].c == empty || goban[i][j].c == border)
+				fout << ". ";
+			if (goban[i][j].c == black)
+				fout << "X ";
+			if (goban[i][j].c == white)
+				fout << "O ";
 		}
-		printf("\n");
+		fout << endl;
 	}
 }
 
@@ -251,7 +258,7 @@ float board::judge(){
 				w++;
 		}
 	}
-	return b-w-6.5;
+	return b-w;
 }
 
 bool board::play(bool player,int coordx, int coordy, bool simulation){
@@ -376,5 +383,5 @@ std::vector<int> board::get_valid_set(bool player){
 			(N(target))->findparent()->fakeliberty ++;
 			validset.push_back((coordx-1)*13+coordy);
 		}
-	return validset;
+		return validset;
 }

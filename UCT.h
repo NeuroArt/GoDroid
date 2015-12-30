@@ -24,6 +24,7 @@ private:
 		int move;
 		bool player;
 		char color;
+		double ucbValue;
 
 		Node(bool _play) {
 			win = 0;
@@ -33,6 +34,7 @@ private:
 			sibling = NULL;
 			player = _play;
 			move = -1;
+			ucbValue = -1;
 		}
 		double V(double explore_coeff) {
 			//printf("Tn: %d Total: %d ", Tn, total);
@@ -41,7 +43,8 @@ private:
 		double getUCBValue(double explore_coeff) {
 			if (total == 0) return largeFloat;
 			//printf("V: %f\n", V(explore_coeff));
-			return value() + sqrt(explore_coeff / total * min(0.25, V(explore_coeff)));
+			//return value() + sqrt(explore_coeff / total * min(0.25, V(explore_coeff)));
+			return value() + sqrt(explore_coeff / total * 2);
 		}
 		void addChild(Node *newChild) {
 			if (lchild == NULL) {
@@ -100,7 +103,7 @@ private:
 			Node *p = lchild;
 			while (p != NULL) {
 				double childUrgency = p->getUCBValue(explore_coeff);
-				
+				p->ucbValue = childUrgency;
 				if (childUrgency > bestUrgency) {
 					bestUrgency = childUrgency;
 					bestChild = p;
@@ -215,29 +218,14 @@ public:
 	}
 	int getNextMove() {
 		Node *tmp = root->findBestChild();
+		ofstream out("E:\log2.txt", ios::app);
+		int i = tmp->move / 13 + 1;
+		int j = tmp->move % 13 + 1;
+		out << "player" << tmp->player << ' ' << i << ' ' << j << " UCB: " << tmp->ucbValue << endl;
 		return tmp->move;
 	}
 	void showTree(bool flag = 1) {
-		Node *p = root;
-		queue<Node *> q;
-		q.push(p);
-
 		rootBoard.showboardtofile();
-
-		ofstream out("log.txt",ios::out);
-		while (!q.empty()) {
-			p = q.front();
-			q.pop();
-			if (p->total)
-				//printf("%d/%d ", p->win, p->total);
-				out <<"player: "<<p->player<<" move"<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
-			
-			Node *tmp = p->lchild;
-			while (tmp != NULL) {
-				q.push(tmp);
-				tmp = tmp->sibling;
-			}
-		}
 	}
 	void showTotal() {
 		printf("%d/%d\n", root->win, root->total);

@@ -6,7 +6,7 @@
 
 montecarlo::montecarlo(board &inBoard,bool bplayer) {
 	getInitBoard(inBoard);
-	player = bplayer;
+	player = !bplayer;
 	run();
 }
 
