@@ -85,14 +85,10 @@ void board::clear_board(){
 
 void board::place(bool player, kaku*k){
 	k->c = player?black:white;
-	if ((E(k))->c!=border&&(E(k))->c!=empty)
-		(E(k))->findparent()->fakeliberty --;
-	if ((W(k))->c!=border&&(W(k))->c!=empty)
-		(W(k))->findparent()->fakeliberty --;
-	if ((S(k))->c!=border&&(S(k))->c!=empty)
-		(S(k))->findparent()->fakeliberty --;
-	if ((N(k))->c!=border&&(N(k))->c!=empty)
-		(N(k))->findparent()->fakeliberty --;
+	(E(k))->findparent()->fakeliberty --;
+	(W(k))->findparent()->fakeliberty --;
+	(S(k))->findparent()->fakeliberty --;
+	(N(k))->findparent()->fakeliberty --;
 /*	emptycells->erase(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
@@ -105,14 +101,10 @@ bool board::deathtest(kaku* k){
 
 void board::kill(kaku* k){
 	k->c = empty;
-	if ((E(k))->c!=border&&(E(k))->c!=empty)
-		(E(k))->findparent()->fakeliberty ++;
-	if ((W(k))->c!=border&&(W(k))->c!=empty)
-		(W(k))->findparent()->fakeliberty ++;
-	if ((S(k))->c!=border&&(S(k))->c!=empty)
-		(S(k))->findparent()->fakeliberty ++;
-	if ((N(k))->c!=border&&(N(k))->c!=empty)
-		(N(k))->findparent()->fakeliberty ++;
+	(E(k))->findparent()->fakeliberty ++;
+	(W(k))->findparent()->fakeliberty ++;
+	(S(k))->findparent()->fakeliberty ++;
+	(N(k))->findparent()->fakeliberty ++;
 /*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
 	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
 }
@@ -163,6 +155,31 @@ void board::showboard(){
 		}
 		printf("\n");
 	}
+}
+
+void board::showboardtofile(){
+	FILE *fp;
+	fp=fopen("board.txt","w");
+	if (fp!=NULL){
+		fprintf(fp,"%c",' ');
+		for(int i=1;i<SIZE+1;++i){
+			fprintf(fp,"%c",'a'+i-1);
+		}
+		fprintf(fp,"\n");
+		for(int i=1;i<SIZE+1;++i){
+			fprintf(fp,"%c",'A'+i-1);
+			for(int j=1;j<SIZE+1;++j){
+				if(goban[i][j].c==empty||goban[i][j].c==border)
+					fprintf(fp,"%c",43);
+				if(goban[i][j].c==black)
+					fprintf(fp,"%c",'X');
+				if(goban[i][j].c==white)
+					fprintf(fp,"%c",'O');
+			}
+			fprintf(fp,"\n");
+		}
+	}
+	fclose(fp);
 }
 
 // std::set<int>* board::getemptycells(){
@@ -329,8 +346,16 @@ std::vector<int> board::get_valid_set(bool player){
 				continue;
 			if (((E(target))->c==alley||(E(target))->c==border)&&((W(target))->c==alley||(W(target))->c==border)&&((S(target))->c==alley||(S(target))->c==border)&&((N(target))->c==alley||(N(target))->c==border))
 				continue;
-			if (((E(target))->c==enemy&&(E(target))->findliberty()==1)||((W(target))->c==enemy&&(W(target))->findliberty()==1)||((S(target))->c==enemy&&(S(target))->findliberty()==1)||((N(target))->c==enemy&&(N(target))->findliberty()==1)){
+			(E(target))->findparent()->fakeliberty --;
+			(W(target))->findparent()->fakeliberty --;
+			(S(target))->findparent()->fakeliberty --;
+			(N(target))->findparent()->fakeliberty --;
+			if (((E(target))->c==enemy&&(E(target))->findliberty()==0)||((W(target))->c==enemy&&(W(target))->findliberty()==0)||((S(target))->c==enemy&&(S(target))->findliberty()==0)||((N(target))->c==enemy&&(N(target))->findliberty()==0)){
 				validset.push_back((coordx-1)*13+coordy);
+				(E(target))->findparent()->fakeliberty ++;
+				(W(target))->findparent()->fakeliberty ++;
+				(S(target))->findparent()->fakeliberty ++;
+				(N(target))->findparent()->fakeliberty ++;
 				continue;
 			}
 			//printf("%d %d %d\n",total,ko_i,ko_j);
@@ -338,8 +363,17 @@ std::vector<int> board::get_valid_set(bool player){
 			bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
 			bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
 			bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
-			if (!flag1&&!flag2&&!flag3&&!flag4)
+			if (!flag1&&!flag2&&!flag3&&!flag4){
+				(E(target))->findparent()->fakeliberty ++;
+				(W(target))->findparent()->fakeliberty ++;
+				(S(target))->findparent()->fakeliberty ++;
+				(N(target))->findparent()->fakeliberty ++;
 				continue;
+			}
+			(E(target))->findparent()->fakeliberty ++;
+			(W(target))->findparent()->fakeliberty ++;
+			(S(target))->findparent()->fakeliberty ++;
+			(N(target))->findparent()->fakeliberty ++;
 			validset.push_back((coordx-1)*13+coordy);
 		}
 	return validset;

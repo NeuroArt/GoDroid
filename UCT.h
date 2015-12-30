@@ -221,13 +221,17 @@ public:
 		Node *p = root;
 		queue<Node *> q;
 		q.push(p);
+
+		rootBoard.showboardtofile();
+
 		ofstream out("log.txt",ios::out);
 		while (!q.empty()) {
 			p = q.front();
 			q.pop();
 			if (p->total)
 				//printf("%d/%d ", p->win, p->total);
-				out <<"move"<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
+				out <<"player: "<<p->player<<" move"<< (p->move)%13+1<<' '<<(p->move)/13+1<<' ' << p->win << '/' << p->total << "winning rate: "<< float(p->win)/p->total <<endl;
+			
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);

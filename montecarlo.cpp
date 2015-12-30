@@ -17,7 +17,6 @@ void montecarlo::getInitBoard(board &inBoard) {
 }
 
 void montecarlo::run() {
-	int step = 0;
 	int fault = 0;
 	//printf("random: ");
 	while (fault <= 1000) {
@@ -26,7 +25,7 @@ void montecarlo::run() {
 		int coordX = randomNumber / SIZE + 1;
 		int coordY = randomNumber % SIZE + 1;
 		if (currentBoard.play(player, coordX, coordY)) {
-			step++;
+			player = !player;
 		}
 		else {
 			fault++;
