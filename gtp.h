@@ -1,8 +1,8 @@
-#ifndef _GTP_H
-#define _GTP_H
-
 #include <stdarg.h>
 #include <stdio.h>
+
+#ifndef _GTP_H
+#define _GTP_H
 
 /* Maximum allowed line length in GTP. */
 #define GTP_BUFSIZE 1000
