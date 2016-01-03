@@ -186,18 +186,18 @@ public:
 		}
 		return currentBoard;
 	}
-	void createAllChildrenIfNone(Node *p,bool player) {
+	void createAllChildrenIfNone(Node *p) {
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			board currentBoard(getBoard(p));
-			set<short>* ataripositionalley = player?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
-			set<short>* ataripositionenemy = (!player)?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
+			set<short>* ataripositionalley = p->player?(&currentBoard.ataripositionforwhite):(&currentBoard.ataripositionforblack);
+			set<short>* ataripositionenemy = p->player?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
 
 			std::set<short>::iterator iter;
 			if (!ataripositionalley->empty())
 				for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++){
 					//printf("atari position alley:%d length:%d\n",*iter,ataripositionalley->size());
-					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!player)){
+					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
 						bool tmpPlayer = !(p->player);
 						Node *tmp= new Node(tmpPlayer);
 						short pos = *iter;
@@ -208,7 +208,7 @@ public:
 			if (!ataripositionenemy->empty())
 				for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++){
 					//printf("atari position enemy:%d length:%d\n",*iter,ataripositionenemy->size());
-					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!player)){
+					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
 						bool tmpPlayer = !(p->player);
 						Node *tmp= new Node(tmpPlayer);
 						short pos = *iter;
@@ -217,7 +217,7 @@ public:
 					}
 				}
 			if (p->lchild == NULL){
-				std::set<short>* validset = (player?(&currentBoard.validsetforwhite):(&currentBoard.validsetforblack));
+				std::set<short>* validset = (p->player?(&currentBoard.validsetforwhite):(&currentBoard.validsetforblack));
 				if (!validset->empty()){
 					for (iter=validset->begin();iter!=validset->end();iter++){
 						bool tmpPlayer = !(p->player);
@@ -239,13 +239,13 @@ public:
 	}
 	void playOneSequenceInMoGo(bool player) {
 		Node* p = root;
-		createAllChildrenIfNone(p,player);
+		createAllChildrenIfNone(p);
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
 			if (p != NULL && p->isLeaf()) {
 				if (p->total == 0) break;
-				createAllChildrenIfNone(p,player);
+				createAllChildrenIfNone(p);
 				p = p->findBestChild();
 				break;
 			}
