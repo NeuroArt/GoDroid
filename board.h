@@ -59,7 +59,6 @@ struct kaku{
 class board{
 private:
 	static const int board_size = SIZE;
-	kaku goban[SIZE+2][SIZE+2];
 /*	std::set<int> *emptycells;*/
 	int ko_i;
 	int ko_j;
@@ -75,6 +74,7 @@ private:
 	void ataritest(kaku* k, cell state,int &total);
 	void refreshtest(kaku*k);
 public:
+	kaku goban[SIZE+2][SIZE+2];
 	board();
 	board(const board& b);
 	~board();

@@ -1,7 +1,7 @@
+#include "board.h"
+
 #ifndef _AI_H
 #define _AI_H
-
-#include "board.h"
 
 //i,j belongs to [0,12] and needs transformations when communicating with board.
 
@@ -26,6 +26,7 @@ int board_empty();
 int get_board(int i, int j);
 int get_boardsize();
 int get_string(int i, int j, int *stonei, int *stonej);//未实现，返回类型未确定
+board* get_brd();
 
 int legal_move(int i, int j, int color);//board?
 void play_move(int i, int j, int color);

@@ -64,6 +64,9 @@ board::board(const board& b){
 /*	emptycells = new std::set<int>(*b.emptycells);*/
 	validsetforblack = b.validsetforblack;
 	validsetforwhite = b.validsetforwhite;
+	for (int i=1;i<=SIZE*SIZE;++i){
+		goban[(i-1)/SIZE+1][(i-1)%SIZE+1].position=i;
+	}
 	ataripositionforblack = b.ataripositionforblack;
 	ataripositionforwhite = b.ataripositionforwhite;
 	ko_i = b.ko_i;
@@ -408,13 +411,15 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 	cell alley = player?black:white;
 	//printf("%d %d %d %d\n",coordx,coordy,ko_i,ko_j);
 	if (coordx==0 && coordy==0){
+		ko_i=-1;
+		ko_j=-1;
 		return true;
 	}
 	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){
 		return false;
 	}
-	if (simulation&&((E(target))->c==alley)&&((S(target))->c==alley)&&((W(target))->c==alley)&&((N(target))->c==alley)&&(((N(target)-1)->c==alley)+((N(target)+1)->c==alley)+((S(target)-1)->c==alley)+((S(target)+1)->c==alley)>=3))
-		return false;
+// 	if (simulation&&((E(target))->c==alley)&&((S(target))->c==alley)&&((W(target))->c==alley)&&((N(target))->c==alley)&&(((N(target)-1)->c==alley)+((N(target)+1)->c==alley)+((S(target)-1)->c==alley)+((S(target)+1)->c==alley)>=3))
+// 		return false;
 
 	place(player,target);
 	int total = 0;
@@ -439,6 +444,16 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 			validsetforblack.erase(goban[ko_i][ko_j].position);
 		else
 			validsetforwhite.erase(goban[ko_i][ko_j].position);
+	}
+
+	//printf("%d %d %d\n",total,ko_i,ko_j);
+	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
+	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
+	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
+	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
+	if (!flag1&&!flag2&&!flag3&&!flag4){
+		kill(target); // 按道理来说，逻辑正确的话这行指令是永远不可能执行的，为求保险写上此行
+		return false;
 	}
 
 	if (E(target)->c==enemy){ //维护atari点
@@ -491,15 +506,6 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 			refreshtest(N(target));
 		}
 
-	//printf("%d %d %d\n",total,ko_i,ko_j);
-	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
-	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
-	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
-	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
-	if (!flag1&&!flag2&&!flag3&&!flag4){
-		kill(target); // 按道理来说，逻辑正确的话这行指令是永远不可能执行的，为求保险写上此行
-		return false;
-	}
 	target->fakeliberty = ((E(target))->c==empty)+((W(target))->c==empty)+((S(target))->c==empty)+((N(target))->c==empty);
 	if((E(target))->c==alley)
 		kaku::Union(target,E(target));
@@ -535,6 +541,9 @@ board& board::operator=(const board& b){
 	ko_j = b.ko_j;
 	validsetforblack = b.validsetforblack;
 	validsetforwhite = b.validsetforwhite;
+	for (int i=1;i<=SIZE*SIZE;++i){
+		goban[(i-1)/SIZE+1][(i-1)%SIZE+1].position=i;
+	}
 	ataripositionforblack = b.ataripositionforblack;
 	ataripositionforwhite = b.ataripositionforwhite;
 	return *this;
@@ -560,8 +569,11 @@ int board::get_final_status(int i, int j){
 bool board::valid_test(kaku* target, bool player){
 	cell enemy = player?white:black;
 	cell alley = player?black:white;
-	if (target->c!=empty)
+	short coordx = (target->position-1)/SIZE+1;
+	short coordy = (target->position-1)%SIZE+1;
+	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){
 		return false;
+	}
 	(E(target))->findparent()->fakeliberty --;
 	(W(target))->findparent()->fakeliberty --;
 	(S(target))->findparent()->fakeliberty --;

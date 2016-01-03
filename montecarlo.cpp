@@ -22,6 +22,7 @@ void montecarlo::run() {
 	int fault = 0;
 	bool flag=true;
 	//printf("random: ");
+	int triedtimes=0;
 	while (flag) {
 		bool walked = false;
 		bool flag1=false;
@@ -33,7 +34,8 @@ void montecarlo::run() {
 		set<short>* ataripositionenemy = (!player)?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
 		set<short>* validsetenemy = !player?(&currentBoard.validsetforblack):(&currentBoard.validsetforwhite);
 		set<short>::iterator iter;
-		while (!ataripositionalley->empty()){
+		while (triedtimes<=300&&!ataripositionalley->empty()){
+			triedtimes++;
 			iter = ataripositionalley->begin();
 			int randomNumber = rand() * ataripositionalley->size() / (RAND_MAX + 1);
 			for (int i=0;i<randomNumber;i++)
@@ -48,7 +50,8 @@ void montecarlo::run() {
 			}
 			ataripositionalley->erase(*iter);//这里没有考虑周全
 		}
-		while (!walked&&!ataripositionenemy->empty()){
+		while (triedtimes<=300&&!walked&&!ataripositionenemy->empty()){
+			triedtimes++;
 			iter = ataripositionenemy->begin();
 			int randomNumber = rand() * ataripositionenemy->size() / (RAND_MAX + 1);
 			for (int i=0;i<randomNumber;i++)
@@ -63,10 +66,10 @@ void montecarlo::run() {
 			}
 			ataripositionenemy->erase(*iter);
 		}
-		while (!walked&&!validsetalley->empty()){
+		while (triedtimes<=300&&!walked&&!validsetalley->empty()){
+			triedtimes++;
 			iter = validsetalley->begin();
 			int randomNumber = rand() * validsetalley->size() / (RAND_MAX + 1);
-			//printf("%d\n",randomNumber);
 			for (int i=0;i<randomNumber;i++)
 				iter++;
 			int coordX = (*iter-1) / SIZE + 1;
@@ -83,10 +86,13 @@ void montecarlo::run() {
 			player = !player;
 			walked = true;
 		}
+		if (triedtimes>300)
+			flag=false;
 		if (validsetalley->empty()&&validsetenemy->empty()&&ataripositionalley->empty()&&ataripositionenemy->empty()){
 			flag=false;
- 			currentBoard.showboard();
-// 			system("pause");
+//  			currentBoard.showboard();
+// 			printf("%d\n",triedtimes);
+//  			system("pause");
 		}
 // 		currentBoard.showboard();
 // 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
