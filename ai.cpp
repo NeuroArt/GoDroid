@@ -18,6 +18,7 @@ void clear_board(){brd->clear_board();}
 int board_empty(){return brd->board_empty();}
 int get_board(int i, int j){return brd->get_cell(i+1,j+1);}
 int get_boardsize(){return board_size;}
+board* get_brd(){return brd;}
 
 int pass_move(int i, int j)
 {
@@ -156,7 +157,7 @@ void set_final_status(int i, int j, int status){
 
 void generate_move(int *i, int *j, int color) {
 	bool player = color==BLACK?1:0;
-	brd->showboard();
+	//brd->showboard();
 	UCT tree(*brd, player);
 	int startTime = clock();
 	int finishTime = clock();

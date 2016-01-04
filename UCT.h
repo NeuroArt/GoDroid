@@ -1,5 +1,3 @@
-#ifndef _UCT_H
-#define _UCT_H
 #include <math.h>
 #include <string.h>
 #include <stack>
@@ -8,6 +6,10 @@
 #include <fstream>
 #include "board.h"
 #include "montecarlo.h"
+
+#ifndef _UCT_H
+#define _UCT_H
+
 #define largeFloat 1000000000000.0
 
 using namespace std;
@@ -15,9 +17,11 @@ using namespace std;
 class UCT {
 private:
 	struct Node {
-		int win, total;
+		int total;
+		int win;
+		int AMAFwin;
 		double value() {
-			return double(win) / total;
+			return double(win)/total;
 		}
 		Node *parent, *lchild, *sibling;
 		//board currentBoard;
@@ -28,6 +32,7 @@ private:
 
 		Node(bool _play) {
 			win = 0;
+			AMAFwin = 0;
 			total = 0;
 			parent = NULL;
 			lchild = NULL;
@@ -96,7 +101,7 @@ private:
 		}
 		Node* findBestChild() {
 			Node* bestChild = NULL;
-			double explore_coeff = log(double(total));
+			double explore_coeff = log(double(total)); //log为0时可能出错
 			
 			double bestUrgency = -largeFloat;
 			
@@ -104,13 +109,26 @@ private:
 			while (p != NULL) {
 				double childUrgency = p->getUCBValue(explore_coeff);
 				p->ucbValue = childUrgency;
-				if (childUrgency > bestUrgency) {
+				if (childUrgency >= bestUrgency) {
 					bestUrgency = childUrgency;
 					bestChild = p;
 				}
 				p = p->sibling;
 			}
 			return bestChild;
+		}
+		Node* findBestMove() {
+			Node* bestMove = NULL;
+			Node *p = lchild;
+			double bestValue = p->value();
+			while (p != NULL) {
+				if (p->value() >= bestValue) {
+					bestValue = p->value();
+					bestMove = p;
+				}
+				p = p->sibling;
+			}
+			return bestMove;
 		}
 		bool removeWorstChild() {
 			Node *worstChild = NULL;
@@ -168,20 +186,47 @@ public:
 		}
 		return currentBoard;
 	}
-	void createAllChildrenIfNone(Node *p,bool player) {
+	void createAllChildrenIfNone(Node *p) {
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
-			int fail = 0;
-			int a=0;
 			board currentBoard(getBoard(p));
-			std::vector<int>validset = getBoard(p).get_valid_set(player);
-			std::vector<int>::iterator iter;
-			for (iter=validset.begin();iter!=validset.end();iter++){
-				bool tmpPlayer = !(p->player);
-				Node *tmp= new Node(tmpPlayer);
-				int pos = *iter;
-				tmp->move = pos-1;
-				p->addChild(tmp);
+			set<short>* ataripositionalley = p->player?(&currentBoard.ataripositionforwhite):(&currentBoard.ataripositionforblack);
+			set<short>* ataripositionenemy = p->player?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
+
+			std::set<short>::iterator iter;
+			if (!ataripositionalley->empty())
+				for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++){
+					//printf("atari position alley:%d length:%d\n",*iter,ataripositionalley->size());
+					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
+						bool tmpPlayer = !(p->player);
+						Node *tmp= new Node(tmpPlayer);
+						short pos = *iter;
+						tmp->move = pos-1;
+						p->addChild(tmp);
+					}
+				}
+			if (!ataripositionenemy->empty())
+				for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++){
+					//printf("atari position enemy:%d length:%d\n",*iter,ataripositionenemy->size());
+					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
+						bool tmpPlayer = !(p->player);
+						Node *tmp= new Node(tmpPlayer);
+						short pos = *iter;
+						tmp->move = pos-1;
+						p->addChild(tmp);
+					}
+				}
+			if (p->lchild == NULL){
+				std::set<short>* validset = (p->player?(&currentBoard.validsetforwhite):(&currentBoard.validsetforblack));
+				if (!validset->empty()){
+					for (iter=validset->begin();iter!=validset->end();iter++){
+						bool tmpPlayer = !(p->player);
+						Node *tmp= new Node(tmpPlayer);
+						short pos = *iter;
+						tmp->move = pos-1;
+						p->addChild(tmp);
+					}
+				}
 			}
 		}
 	}
@@ -194,13 +239,13 @@ public:
 	}
 	void playOneSequenceInMoGo(bool player) {
 		Node* p = root;
-		createAllChildrenIfNone(p,player);
+		createAllChildrenIfNone(p);
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
 			if (p != NULL && p->isLeaf()) {
 				if (p->total == 0) break;
-				createAllChildrenIfNone(p,player);
+				createAllChildrenIfNone(p);
 				p = p->findBestChild();
 				break;
 			}
@@ -217,8 +262,8 @@ public:
 		}	
 	}
 	int getNextMove() {
-		Node *tmp = root->findBestChild();
-		ofstream out("E:\log2.txt", ios::app);
+		Node *tmp = root->findBestMove(); //此处在第一层节点未完全展开时存在bug
+		ofstream out("log2.txt", ios::app);
 		int i = tmp->move / 13 + 1;
 		int j = tmp->move % 13 + 1;
 		out << "player" << tmp->player << ' ' << i << ' ' << j << " UCB: " << tmp->ucbValue << endl;
@@ -226,6 +271,24 @@ public:
 	}
 	void showTree(bool flag = 1) {
 		rootBoard.showboardtofile();
+		Node *p = root;
+		queue<Node *> q;
+		q.push(p);
+		ofstream out("log.txt",ios::ate);
+		Node *tmp = p->lchild;
+		out <<"step"<<endl;
+		while (!q.empty()) {
+			p = q.front();
+			q.pop();
+			if (p->total && p!=root)
+				//printf("%d/%d ", p->win, p->total);
+				out <<"player" << p->player <<"father: "<< (p->parent->move)/13+1<<' '<<(p->parent->move)%13+1<<" move " << (p->move)/13+1<<' '<<(p->move)%13+1<<' ' << p->win << '/' << p->total << "  winning rate: "<< double(p->win)/p->total << "  UCB Value: " << p->ucbValue <<endl;
+			Node *tmp = p->lchild;
+			while (tmp != NULL) {
+				q.push(tmp);
+				tmp = tmp->sibling;
+			}
+		}
 	}
 	void showTotal() {
 		printf("%d/%d\n", root->win, root->total);

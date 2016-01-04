@@ -1,7 +1,7 @@
+#include "board.h"
+
 #ifndef _MONTECARLO_H
 #define _MONTECARLO_H
-
-#include "board.h"
 
 class montecarlo {
 private:

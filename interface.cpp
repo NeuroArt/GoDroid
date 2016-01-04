@@ -294,7 +294,7 @@ gtp_genmove(char *s)
 static int
 gtp_final_score(char *s)
 {
-  float score = komi;
+  double score = komi;
   int i, j;
 
   compute_final_status();
