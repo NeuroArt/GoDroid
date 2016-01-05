@@ -95,6 +95,7 @@ public:
 	void set_final_status(int i, int j, int status);
 	short find_liberty(int i, int j){return goban[i][j].findliberty();}
 	bool valid_test(kaku* target, bool player);
+	bool kotest(kaku* target);
 
 	std::set<short> validsetforblack;
 	std::set<short> validsetforwhite;

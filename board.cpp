@@ -415,12 +415,15 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 		ko_j=-1;
 		return true;
 	}
-	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){
+	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty){
 		return false;
 	}
-// 	if (simulation&&((E(target))->c==alley)&&((S(target))->c==alley)&&((W(target))->c==alley)&&((N(target))->c==alley)&&(((N(target)-1)->c==alley)+((N(target)+1)->c==alley)+((S(target)-1)->c==alley)+((S(target)+1)->c==alley)>=3))
-// 		return false;
-
+	if (coordx==ko_i&&coordy==ko_j&&E(target)->c==enemy&&W(target)->c==enemy&&S(target)->c==enemy&&N(target)->c==enemy)
+		if(E(target)->findliberty()==1||W(target)->findliberty()==1||S(target)->findliberty()==1||N(target)->findliberty()==1){
+			ko_i = -1;
+			ko_j = -1;
+			return false;
+		}
 	place(player,target);
 	int total = 0;
 	if ((E(target))->c==enemy&&deathtest(E(target)))
@@ -447,14 +450,14 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 	}
 
 	//printf("%d %d %d\n",total,ko_i,ko_j);
-	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
-	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
-	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
-	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
-	if (!flag1&&!flag2&&!flag3&&!flag4){
-		kill(target); // 按道理来说，逻辑正确的话这行指令是永远不可能执行的，为求保险写上此行
-		return false;
-	}
+// 	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
+// 	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
+// 	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
+// 	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
+// 	if (!flag1&&!flag2&&!flag3&&!flag4){
+// 		kill(target); // 按道理来说，逻辑正确的话这行指令是永远不可能执行的，为求保险写上此行//自杀就自杀吧，谁也保不了你
+// 		return false;
+// 	}
 
 	if (E(target)->c==enemy){ //维护atari点
 		total = 0;
@@ -515,6 +518,10 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 		kaku::Union(target,S(target));
 	if((N(target))->c==alley)
 		kaku::Union(target,N(target));
+	if (deathtest(target)){
+		killall(target,alley,total);
+		return true;
+	}
 	total = 0;
 	ataritest(target,alley,total);
 	if (total==1){
@@ -524,7 +531,6 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 			ataripositionforwhite.insert(atariposition);
 	}
 	refreshtest(N(target));
-	return true;
 }
 
 board& board::operator=(const board& b){
@@ -602,4 +608,9 @@ bool board::valid_test(kaku* target, bool player){
 	(S(target))->findparent()->fakeliberty ++;
 	(N(target))->findparent()->fakeliberty ++;
 	return true;
+}
+
+bool board::kotest(kaku* target){
+	cell enemy = 
+	if ()
 }
