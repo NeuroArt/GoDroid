@@ -1,7 +1,6 @@
 #include "pattern.h"
 #include <iostream>
 #include <bitset>
-//positive:for black; negative: for white;
 
 unsigned short toShort(int pattern[8]){
     unsigned short res = 0;
@@ -61,6 +60,7 @@ void insert(unsigned short pat){
             patterns.insert(symmetryX(symmetryY(pat)));
             pat = exchange(pat);
         }
+		pat = clockwise(pat);
     }
 }
 
@@ -70,6 +70,15 @@ void insertWhite(unsigned short pat){
         patternsWhite.insert(symmetryX(pat));
         patternsWhite.insert(symmetryY(pat));
         patternsWhite.insert(symmetryX(symmetryY(pat)));
+		pat = clockwise(pat);
+    }
+	pat = exchange(pat);
+    for(int i = 0; i < 4; ++i){
+        patternsBlack.insert(pat);
+        patternsBlack.insert(symmetryX(pat));
+        patternsBlack.insert(symmetryY(pat));
+        patternsBlack.insert(symmetryX(symmetryY(pat)));
+		pat = clockwise(pat);
     }
 }
 
@@ -79,6 +88,15 @@ void insertBlack(unsigned short pat){
         patternsBlack.insert(symmetryX(pat));
         patternsBlack.insert(symmetryY(pat));
         patternsBlack.insert(symmetryX(symmetryY(pat)));
+		pat = clockwise(pat);
+    }
+	pat = exchange(pat);
+    for(int i = 0; i < 4; ++i){
+        patternsWhite.insert(pat);
+        patternsWhite.insert(symmetryX(pat));
+        patternsWhite.insert(symmetryY(pat));
+        patternsWhite.insert(symmetryX(symmetryY(pat)));
+		pat = clockwise(pat);
     }
 }
 
@@ -95,24 +113,23 @@ void erase(unsigned short pat){
 }
 
 void initPatterns(){
-    int pattern[8];
     unsigned short pat;
     //hane
     for(int i = 0; i < 3; ++i){
         for(int j = 0; j < 3; ++j){
             for(int k = 0; k < 3; ++k){
-                pattern = {2,1,2,0,0,i,j,k};
+                int pattern[8] = {2,1,2,0,0,i,j,k};
                 pat = toShort(pattern);
                 insert(pat);
-                pattern = {2,1,i,2,0,j,0,k};
-                pat = toShort(pattern);
+                int pattern1[8] = {2,1,i,2,0,j,0,k};
+                pat = toShort(pattern1);
                 insert(pat);
             }
-            pattern = {2,1,0,0,0,i,0,j};
-            pat = toShort(pattern);
+            int pattern2[8] = {2,1,0,0,0,i,0,j};
+            pat = toShort(pattern2);
             insert(pat);
-            pattern = {2,1,1,0,0,i,0,j};
-            pat = toShort(pattern);
+            int pattern3[8] = {2,1,1,0,0,i,0,j};
+            pat = toShort(pattern3);
             insertBlack(pat);
         }
     }
@@ -123,7 +140,7 @@ void initPatterns(){
             for(int k = 0; k < 3; ++k){
                 for(int x = 0; x < 3; ++x){
                     for(int y = 0; y < 3; ++y){
-                        pattern = {2,1,i,1,j,k,x,y};
+                        int pattern[8] = {2,1,i,1,j,k,x,y};
                         pat = toShort(pattern);
                         insert(pat);
                     }
@@ -134,11 +151,11 @@ void initPatterns(){
     for(int i = 0; i < 3; ++i){
         for(int j = 0; j < 3; ++j){
             for(int k = 0; k < 3; ++k){
-                pattern = {2,1,i,1,1,j,0,k};
+                int pattern[8] = {2,1,i,1,1,j,0,k};
                 pat = toShort(pattern);
                 erase(pat);
-                pattern = {2,1,i,1,0,j,1,k};
-                pat = toShort(pattern);
+                int pattern1[8] = {2,1,i,1,0,j,1,k};
+                pat = toShort(pattern1);
                 erase(pat);
             }
         }
@@ -150,7 +167,7 @@ void initPatterns(){
             for(int k = 0; k < 2; ++k){
                 for(int x = 0; x < 2; ++x){
                     for(int y = 0; y < 2; ++y){
-                        pattern = {i,2,j,1,1,k*2,x*2,y*2};
+                        int pattern[8] = {i,2,j,1,1,k*2,x*2,y*2};
                         pat = toShort(pattern);
                         insert(pat);
                     }
@@ -162,7 +179,7 @@ void initPatterns(){
     //boarder
     for(int i = 0; i < 3; ++i){
         for(int j = 0; j < 3; ++j){
-            pattern = {2,0,i,1,j,3,3,3};
+            int pattern[8] = {2,0,i,1,j,3,3,3};
             pat = toShort(pattern);
             insert(pat);
         }
@@ -170,7 +187,7 @@ void initPatterns(){
     for(int i = 0; i < 3; ++i){
         for(int j = 0; j < 3; ++j){
             for(int k = 0; k < 2; ++k){
-                pattern = {i,2,j,k,1,3,3,3};
+                int pattern[8] = {i,2,j,k,1,3,3,3};
                 pat = toShort(pattern);
                 insert(pat);
             }
@@ -179,7 +196,7 @@ void initPatterns(){
     for(int i = 0; i < 3; ++i){
         for(int j = 0; j < 3; ++j){
             for(int k = 0; k < 3; ++k){
-                pattern = {i,2,1,j,k,3,3,3};
+                int pattern[8] = {i,2,1,j,k,3,3,3};
                 pat = toShort(pattern);
                 insertBlack(pat);
             }
@@ -188,17 +205,21 @@ void initPatterns(){
     for(int i = 0; i < 3; ++i){
         for(int j = 0; j < 3; ++j){
             for(int k = 0; k < 2; ++k){
-                pattern = {i,2,1,j,k,3,3,3};
+                int pattern[8] = {i,2,1,j,k,3,3,3};
                 pat = toShort(pattern);
                 insertWhite(pat);
             }
         }
     }
     for(int i = 0; i < 3; ++i){
-        pattern = {i,2,1,1,2,3,3,3};
+        int pattern[8] = {i,2,1,1,2,3,3,3};
         pat = toShort(pattern);
         insertWhite(pat);
     }
+}
+
+bool findPattern(unsigned short pat, int color){
+	return ((patterns.find(pat)!=patterns.end()) || ((color == 1) && (patternsWhite.find(pat)!=patternsWhite.end())) || ((color == 2) && (patternsBlack.find(pat)!=patternsBlack.end())));
 }
 
 int main(){

@@ -6,9 +6,9 @@
 
 using namespace std;
 
-set<unsigned short> patterns;
-set<unsigned short> patternsBlack;
-set<unsigned short> patternsWhite;
+set<unsigned short> patterns;//for all
+set<unsigned short> patternsBlack;//only for black
+set<unsigned short> patternsWhite;//only for white
 set<unsigned short> cutDeny;
 
 
