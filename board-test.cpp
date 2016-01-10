@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <random>
 #include <string>
@@ -11,7 +12,7 @@ int main(){
 	start = clock();
 	srand((unsigned)time(NULL));
 	set<int> *es = new set<int>;
-	for (int i=1;i<=SIZE*SIZE;++i)
+	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i)
 		es->insert(i);
 	board b(es);
 	b.showboard();
