@@ -66,7 +66,7 @@ void runUCT(situation *s) {
 		cnt++;
 	}
 	printf("thread cnt: %d\n", cnt);
-	cout << s->finalTree << endl;
+	//cout << s->finalTree << endl;
 	while (!m.try_lock());
 	int flag = tree.addFirstLevel(*(s->finalTree));
 	m.unlock();
