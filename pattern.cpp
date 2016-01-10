@@ -20,6 +20,13 @@ unsigned short word(unsigned short orig, int num){
     return res % 4;
 }
 
+void toArray(unsigned short pat, int pattern[8]){
+	for(int i = 0; i < 8; ++i){
+		pattern[i] = pat%4;
+		pat = pat / 4;
+	}
+}
+
 unsigned short clockwise(unsigned short orig){
     int trans[8] = {2,4,7,1,6,0,3,5};
     unsigned short res = 0;
@@ -29,21 +36,20 @@ unsigned short clockwise(unsigned short orig){
 }
 
 unsigned short exchange(unsigned short orig){
-    int color;
-    for(int i = 0; i < 7; ++i){
-        color = word(orig,i);
-        orig -= color * pow(4,i);
-        color = color == 2 ? 1 : color;
-        color = color == 1 ? 2 : color;
-        orig += color * pow(4,i);
-    }
-    return orig;
+    int patt[8];
+	toArray(orig,patt);
+	for(int i = 0; i < 8; ++i){
+		int color = patt[i];
+		patt[i] = (color==black?white:patt[i]);
+		patt[i] = (color==white?black:patt[i]);
+	}
+	return toShort(patt);
 }
 
 unsigned short symmetryX(unsigned short orig){
     int trans[8] = {2,1,0,4,3,7,6,5};
     unsigned short res = 0;
-    for(int i = 0; i < 7; ++i)
+    for(int i = 0; i < 8; ++i)
         res += (word(orig,trans[i])*pow(4,i));
     return res;
 }
@@ -51,7 +57,7 @@ unsigned short symmetryX(unsigned short orig){
 unsigned short symmetryY(unsigned short orig){
     int trans[8] = {5,6,7,3,4,0,1,2};
     unsigned short res = 0;
-    for(int i = 0; i < 7; ++i)
+    for(int i = 0; i < 8; ++i)
         res += (word(orig,trans[i])*pow(4,i));
     return res;
 }
@@ -229,6 +235,7 @@ bool matchPattern(unsigned short pat, int color){
 
 int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 	srand(time(0));
+	if(lastx*lasty == 0) return 0;
 	int deltax[8] = {-1,0,1,-1,1,-1,0,1};
 	int deltay[8] = {-1,-1,-1,0,0,1,1,1};
 	int x[8], y[8];
@@ -236,16 +243,21 @@ int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 	for(int i = 0; i < 8; ++i){
 		int centerx = lastx + deltax[i];
 		int centery = lasty + deltay[i];
+		if(brd->get_cell(centerx,centery) != empty) continue;
 		int pattern[8];
 		if(centerx > 0 && centerx <= BOARDSIZE && centery > 0 && centery <= BOARDSIZE){ //centerxy:[1,13];
+			//printf("patternj: ");
 			for(int j = 0; j < 8; ++j){
 				pattern[j] = brd->get_cell(centerx+deltax[j],centery+deltay[j]);
-			}
+				//printf("%d ",pattern[j]);
+			}//printf("\n");
 			short patt = toShort(pattern);
 			if(matchPattern(patt, color)){
+				//printf("i=%d\n", i);
 				//printf("center: %d %d\n", centerx, centery);
 				//printf("pattern: ");
 				//for(int i = 0; i < 8; ++i)printf("%d ",pattern[i]);
+				//printf("%d", patt);
 				//printf("\n");
 				x[cnt] = centerx;
 				y[cnt] = centery;
@@ -254,13 +266,21 @@ int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 		}
 	}
 	if(cnt){
+		//printf("cnt = %d\n", cnt);
 		int r = rand() % cnt;
 		return (x[r] - 1) * BOARDSIZE + y[r];
 	}
 	return 0;
 }
 
+void printShort(unsigned short pat){
+	int pattern[8];
+	toArray(pat, pattern);
+	printPattern(pattern);
+}
+
 void printPattern(int pattern[8]){
+	printf("Pattern: \n");
 	for(int i = 0; i < 3; ++i){
 		if(pattern[i] == empty) printf("+");
 		if(pattern[i] == black) printf("X");
@@ -278,7 +298,7 @@ void printPattern(int pattern[8]){
 		if(pattern[i] == empty) printf("+");
 		if(pattern[i] == black) printf("X");
 		if(pattern[i] == white) printf("0");
-	}printf("\n");
+	}printf("\n\n");
 }
 
 /*
