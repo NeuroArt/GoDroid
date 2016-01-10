@@ -55,6 +55,20 @@ void montecarlo::run() {
 			}
 			ataripositionalley->erase(*iter);//这里没有考虑周全
 		}
+		while (triedtimes<=300&&!walked){
+			patmove = findPattern(&currentBoard, player, (last-1) / BOARDSIZE + 1, (last-1) % BOARDSIZE + 1);
+			if(patmove){
+				triedtimes++;
+				int coordX = (patmove-1) / BOARDSIZE + 1;
+				int coordY = (patmove-1) % BOARDSIZE + 1;
+				if (currentBoard.play(player, coordX, coordY)) {
+					player = !player;
+					walked = true;
+					flagP=true;
+					break;
+				}
+			}else break;
+		}
 		while (triedtimes<=300&&!walked&&!ataripositionenemy->empty()){
 			triedtimes++;
 			iter = ataripositionenemy->begin();
@@ -71,20 +85,6 @@ void montecarlo::run() {
 				break;
 			}
 			ataripositionenemy->erase(*iter);
-		}
-		while (triedtimes<=300&&!walked){
-			patmove = findPattern(&currentBoard, player, (last-1) / BOARDSIZE + 1, (last-1) % BOARDSIZE + 1);
-			if(patmove){
-				triedtimes++;
-				int coordX = (patmove-1) / BOARDSIZE + 1;
-				int coordY = (patmove-1) % BOARDSIZE + 1;
-				if (currentBoard.play(player, coordX, coordY)) {
-					player = !player;
-					walked = true;
-					flagP=true;
-					break;
-				}
-			}else break;
 		}
 		while (triedtimes<=300&&!walked&&!validsetalley->empty()){
 			triedtimes++;
