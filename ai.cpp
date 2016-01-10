@@ -1,9 +1,11 @@
+
 #include <ctime>
 #include "ai.h"
 #include "UCT.h"
+#include "Parallelization.h"
 
 board *brd;
-int board_size = SIZE;
+int board_size = BOARDSIZE;
 double komi = 3.14;
 int ko_i, ko_j;//illeagal ko point
 
@@ -64,7 +66,7 @@ int valid_fixed_handicap(int handicap)
 
 void place_fixed_handicap(int handicap)
 {
-  int low = board_size >= SIZE ? 3 : 2;
+  int low = board_size >= BOARDSIZE ? 3 : 2;
   int mid = board_size / 2;
   int high = board_size - 1 - low;
 
@@ -155,29 +157,37 @@ void set_final_status(int i, int j, int status){
 	brd->set_final_status(i+1, j+1, status);
 }
 
-void generate_move(int *i, int *j, int color) {
-	bool player = color==BLACK?1:0;
-	//brd->showboard();
-	UCT tree(*brd, player);
-	int startTime = clock();
-	int finishTime = clock();
-	int cnt = 0;
-	while(finishTime - startTime < 2500) {
-		tree.playOneSequenceInMoGo(player);
-		finishTime = clock();
-		cnt++;
-	}
-	printf("cnt: %d\n", cnt);
-	int mov = tree.getNextMove();
-	tree.showTree(0);
-	*i = mov/SIZE;
-	*j = mov%SIZE;
+//void generate_move(int *i, int *j, int color) { //老的generate_move
+//	bool player = color==black?1:0;
+//	//brd->showboard();
+//	UCT tree(*brd, player);
+//	int starttime = clock();
+//	int finishtime = clock();
+//	int cnt = 0;
+//	while(finishtime - starttime < 2500) {
+//		tree.playOneSequenceInMoGo(player);
+//		finishtime = clock();
+//		cnt++;
+//	}
+//	printf("cnt: %d\n", cnt);
+//	int mov = tree.getNextMove();
+//	tree.showTree(0);
+//	*i = mov/BOARDSIZE;
+//	*j = mov%BOARDSIZE;
+//}
+
+void generate_move(int *i, int *j, int color) { //新的generate_move 使用了并行
+	bool player = color == BLACK ? 1 : 0;
+	Parallelization para(*brd, player, 4);//并行类，还未测试
+	int mov = para.getMove();
+	*i = mov / BOARDSIZE;
+	*j = mov % BOARDSIZE;
 }
 
 void play_move(int i, int j, int color){
-	int mov = i*SIZE + j;
-	int posX = mov / SIZE + 1;
-	int posY = mov % SIZE + 1;
+	int mov = i*BOARDSIZE + j;
+	int posX = mov / BOARDSIZE + 1;
+	int posY = mov % BOARDSIZE + 1;
 	bool flag = color==BLACK?true:false;
 	brd->play(flag, posX, posY, false);
 }

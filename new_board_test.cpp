@@ -34,7 +34,7 @@ int main(){
 	srand(time(NULL));
 	//srand((unsigned)time(NULL));
 // 	set<int> *es = new set<int>;
-// 	for (int i=1;i<=SIZE*SIZE;++i)
+// 	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i)
 // 		es->insert(i);
 	board b;//全局唯一的board
 	int fail = 0;
@@ -52,8 +52,8 @@ int main(){
 		printf("cnt: %d\n", cnt);
 		tree.showTotal();
 		int move = tree.getNextMove();//获得模拟出的最佳下一步
-		int positionX = move / SIZE + 1;
-		int positionY = move % SIZE + 1;
+		int positionX = move / BOARDSIZE + 1;
+		int positionY = move % BOARDSIZE + 1;
 		bool flag = b.getcurrentplayer();
 		printf("The next move is %d, %d\n", positionX, positionY);
 		if (b.play(flag, positionX, positionY)){//玩它

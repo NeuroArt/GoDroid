@@ -1,5 +1,3 @@
-#ifndef _UCT_H
-#define _UCT_H
 #include <math.h>
 #include <string.h>
 #include <stack>
@@ -8,6 +6,9 @@
 #include <fstream>
 #include "board.h"
 #include "montecarlo.h"
+
+#ifndef _UCT_H
+#define _UCT_H
 
 #define largeFloat 1000000000000.0
 
@@ -100,7 +101,7 @@ private:
 		}
 		Node* findBestChild() {
 			Node* bestChild = NULL;
-			double explore_coeff = log(double(total)); //logÎª0Ê±¿ÉÄÜ³ö´í
+			double explore_coeff = log(double(total)); //logä¸º0æ—¶å¯èƒ½å‡ºé”™
 			
 			double bestUrgency = -largeFloat;
 			
@@ -178,8 +179,8 @@ public:
 		while (!back.empty()) {
 			int num = back.top();
 			back.pop();
-			int coordX = num / BOARDSIZE + 1;
-			int coordY = num % BOARDSIZE + 1;
+			int coordX = num / SIZE + 1;
+			int coordY = num % SIZE + 1;
 			player = !player;
 			currentBoard.play(player, coordX, coordY);
 		}
@@ -261,7 +262,7 @@ public:
 		}	
 	}
 	int getNextMove() {
-		Node *tmp = root->findBestMove(); //´Ë´¦ÔÚµÚÒ»²ã½ÚµãÎ´ÍêÈ«Õ¹¿ªÊ±´æÔÚbug
+		Node *tmp = root->findBestMove(); //æ­¤å¤„åœ¨ç¬¬ä¸€å±‚èŠ‚ç‚¹æœªå®Œå…¨å±•å¼€æ—¶å­˜åœ¨bug
 		ofstream out("log2.txt", ios::app);
 		int i = tmp->move / 13 + 1;
 		int j = tmp->move % 13 + 1;
@@ -279,7 +280,7 @@ public:
 		while (!q.empty()) {
 			p = q.front();
 			q.pop();
-			if (p->total)
+			if (p->total && p!=root)
 				//printf("%d/%d ", p->win, p->total);
 				out <<"player" << p->player <<"father: "<< (p->parent->move)/13+1<<' '<<(p->parent->move)%13+1<<" move " << (p->move)/13+1<<' '<<(p->move)%13+1<<' ' << p->win << '/' << p->total << "  winning rate: "<< double(p->win)/p->total << "  UCB Value: " << p->ucbValue <<endl;
 			Node *tmp = p->lchild;
@@ -292,28 +293,7 @@ public:
 	void showTotal() {
 		printf("%d/%d\n", root->win, root->total);
 	}
-	bool addFirstLevel(UCT &targetTree){
-		Node *source = root;
-		Node *target = targetTree.root;
-		target->total += source->total;
-		target->AMAFwin += source->AMAFwin;
-		target->win += source->win;
-		source = source->lchild;
-		target = target->lchild;
-		if (source == NULL || target == NULL) return 0;
-		while (target != NULL) {
-			if (source->move != target->move) return 0;
-			target->total += source->total;
-			target->AMAFwin += source->AMAFwin;
-			target->win += source->win;
-			source = source->sibling;
-			target = target->sibling;
-		}
-		return 1;
-	}
-	Node* getRoot() {
-		return root;
-	}
+
 };
 
 #endif
