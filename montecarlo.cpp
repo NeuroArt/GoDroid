@@ -55,13 +55,14 @@ void montecarlo::run() {
 			}
 			ataripositionalley->erase(*iter);//这里没有考虑周全
 		}
-		while (triedtimes<=300&&!walked && !last){
+		while (triedtimes<=300&&!walked && last!=0){
+			printf("finding patterns\n");
 			patmove = findPattern(&currentBoard, player, (last-1) / BOARDSIZE + 1, (last-1) % BOARDSIZE + 1);
 			if(patmove){
 				triedtimes++;
-				last = patmove;
 				int coordX = (patmove-1) / BOARDSIZE + 1;
 				int coordY = (patmove-1) % BOARDSIZE + 1;
+				last = patmove;
 				if (currentBoard.play(player, coordX, coordY)) {
 					player = !player;
 					walked = true;
@@ -78,7 +79,7 @@ void montecarlo::run() {
 				iter++;
 			int coordX = (*iter-1) / BOARDSIZE + 1;
 			int coordY = (*iter-1) % BOARDSIZE + 1;
-			int last = *iter;
+			last = *iter;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -113,11 +114,12 @@ void montecarlo::run() {
 		if (validsetalley->empty()&&validsetenemy->empty()&&ataripositionalley->empty()&&ataripositionenemy->empty()){
 			flag=false;
 		}
-		currentBoard.showboard();
-		printf("%d\n", triedtimes);
-		system("pause");
-// 		currentBoard.showboard();
-//		printf("%d\n", last);
+//		currentBoard.showboard();
+//		printf("%d\n", triedtimes);
+//		system("pause");
+ 		currentBoard.showboard();
+		printf("%d\n", last);
+		if(flagP)printf("pattern hit \n");
 // 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
 // 			printf("%d ",*iter);
 // 		printf("\n");
@@ -131,7 +133,7 @@ void montecarlo::run() {
 // 			printf("%d ",*iter);
 // 		printf("\n");
 // 
-// 		system("pause");
+ 		system("pause");
 	}
 	//printf("\n");
 	winner = currentBoard.judge()>0?1:0;

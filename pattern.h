@@ -13,6 +13,8 @@ void initPatterns();
 
 unsigned short toShort(int pattern[8]);
 
+void toArray(unsigned short pat, int pattern[8]);
+
 unsigned short word(unsigned short orig, int num);
 
 unsigned short clockwise(unsigned short orig);
@@ -34,6 +36,8 @@ void erase(unsigned short pat);
 bool matchPattern(unsigned short pat, int color);
 
 int findPattern(board *brd, int color, int lastx, int lasty);
+
+void printShort(unsigned short pat);
 
 void printPattern(int pattern[8]);
 
