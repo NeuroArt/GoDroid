@@ -9,15 +9,11 @@
 
 using namespace std;
 
-set<unsigned short> patterns;//for all
-set<unsigned short> patternsBlack;//only for black
-set<unsigned short> patternsWhite;//only for white
-set<unsigned short> cutDeny;
-
-
 void initPatterns();
 
-unsigned short bit(unsigned short orig, int num);
+unsigned short toShort(int pattern[8]);
+
+unsigned short word(unsigned short orig, int num);
 
 unsigned short clockwise(unsigned short orig);
 
@@ -26,5 +22,17 @@ unsigned short exchange(unsigned short orig);
 unsigned short symmetryX(unsigned short orig);
 
 unsigned short symmetryY(unsigned short orig);
+
+void insert(unsigned short pat);
+
+void insertWhite(unsigned short pat);
+
+void insertBlack(unsigned short pat);
+
+void erase(unsigned short pat);
+
+bool matchPattern(unsigned short pat, int color);
+
+int findPattern(board *brd, int color, int lastx, int lasty);
 
 #endif

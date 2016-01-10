@@ -2,6 +2,11 @@
 #include <iostream>
 #include <bitset>
 
+set<unsigned short> patterns;//for all
+set<unsigned short> patternsBlack;//only for black
+set<unsigned short> patternsWhite;//only for white
+set<unsigned short> cutDeny;
+
 unsigned short toShort(int pattern[8]){
     unsigned short res = 0;
     for(int i = 0; i < 8; ++i){
@@ -222,7 +227,7 @@ bool matchPattern(unsigned short pat, int color){
 	return ((patterns.find(pat)!=patterns.end()) || ((color == 1) && (patternsWhite.find(pat)!=patternsWhite.end())) || ((color == 2) && (patternsBlack.find(pat)!=patternsBlack.end())));
 }
 
-int findPattern(board *brd, int color, int lastx, int lasty){
+int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 	srand(time(0));
 	int deltax[8] = {-1,0,1,-1,1,-1,0,1};
 	int deltay[8] = {-1,-1,-1,0,0,1,1,1};
@@ -232,7 +237,7 @@ int findPattern(board *brd, int color, int lastx, int lasty){
 		int centerx = lastx + deltax[i];
 		int centery = lasty + deltay[i];
 		int pattern[8];
-		if(centerx > 0 && centerx < 14 && centery > 0 && centery < 14){
+		if(centerx > 0 && centerx <= BOARDSIZE && centery > 0 && centery <= BOARDSIZE){ //centerxy:[1,13];
 			for(int j = 0; j < 8; ++j){
 				pattern[j] = brd->get_cell(centerx+deltax[j],centery+deltay[j]);
 			}
@@ -246,11 +251,11 @@ int findPattern(board *brd, int color, int lastx, int lasty){
 	}
 	if(cnt){
 		int r = rand() % cnt;
-		return x[r] * 13 + y[r];
+		return (x[r] - 1) * BOARDSIZE + y[r];
 	}
 	return 0;
 }
-
+/*
 int main(){
     int pattern[8] = {3,3,3,3,3,3,3,3};
     cout << "hello" << endl;
@@ -258,3 +263,4 @@ int main(){
     cout << pat << endl;
     cout << bitset<sizeof(int)*8>(pat) << endl;
 }
+*/
