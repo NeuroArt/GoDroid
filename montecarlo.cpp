@@ -46,7 +46,7 @@ void montecarlo::run() {
 				iter++;
 			int coordX = (*iter-1) / BOARDSIZE + 1;
 			int coordY = (*iter-1) % BOARDSIZE + 1;
-			int last = *iter;
+			last = *iter;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -55,10 +55,11 @@ void montecarlo::run() {
 			}
 			ataripositionalley->erase(*iter);//这里没有考虑周全
 		}
-		while (triedtimes<=300&&!walked){
+		while (triedtimes<=300&&!walked && !last){
 			patmove = findPattern(&currentBoard, player, (last-1) / BOARDSIZE + 1, (last-1) % BOARDSIZE + 1);
 			if(patmove){
 				triedtimes++;
+				last = patmove;
 				int coordX = (patmove-1) / BOARDSIZE + 1;
 				int coordY = (patmove-1) % BOARDSIZE + 1;
 				if (currentBoard.play(player, coordX, coordY)) {
@@ -94,7 +95,7 @@ void montecarlo::run() {
 				iter++;
 			int coordX = (*iter-1) / BOARDSIZE + 1;
 			int coordY = (*iter-1) % BOARDSIZE + 1;
-			int last = *iter;
+			last = *iter;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -116,6 +117,7 @@ void montecarlo::run() {
 //  			system("pause");
 		}
 // 		currentBoard.showboard();
+//		printf("%d\n", last);
 // 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
 // 			printf("%d ",*iter);
 // 		printf("\n");
