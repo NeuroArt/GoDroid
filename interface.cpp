@@ -67,7 +67,7 @@ main(int argc, char **argv)
   setbuf(stdout, NULL);
 
   /* Inform the GTP utility functions about the initial board size. */
-  gtp_internal_set_boardsize(SIZE);
+  gtp_internal_set_boardsize(BOARDSIZE);
 
   /* Initialize the board. */
   init_ai();
@@ -145,7 +145,7 @@ gtp_boardsize(char *s)
   if (sscanf(s, "%d", &boardsize) < 1)
     return gtp_failure("boardsize not an integer");
 
-  if (boardsize < SIZE || boardsize > SIZE)
+  if (boardsize < BOARDSIZE || boardsize > BOARDSIZE)
     return gtp_failure("unacceptable size");
 
   gtp_internal_set_boardsize(boardsize);

@@ -6,7 +6,7 @@
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
-#define SIZE 13
+#define BOARDSIZE 13
 
 #define DEAD 0
 #define ALIVE 1
@@ -19,8 +19,8 @@
 #define I(pos) (((pos) / board_size) + 1)
 #define J(pos) (((pos) % board_size) + 1)
 
-#define N(pos) (pos-(SIZE+2))
-#define S(pos) (pos+(SIZE+2))
+#define N(pos) (pos-(BOARDSIZE+2))
+#define S(pos) (pos+(BOARDSIZE+2))
 #define W(pos) (pos-1)
 #define E(pos) (pos+1)
 
@@ -58,13 +58,13 @@ struct kaku{
 
 class board{
 private:
-	static const int board_size = SIZE;
+	static const int board_size = BOARDSIZE;
 /*	std::set<int> *emptycells;*/
 	int ko_i;
 	int ko_j;
 	int atariposition;
 
-	int final_status[SIZE*SIZE];
+	int final_status[BOARDSIZE*BOARDSIZE];
 
 	void place(bool player, kaku*k);
 	bool deathtest(kaku* k);
@@ -74,12 +74,12 @@ private:
 	void ataritest(kaku* k, cell state,int &total);
 	void refreshtest(kaku*k);
 public:
-	kaku goban[SIZE+2][SIZE+2];
+	kaku goban[BOARDSIZE+2][BOARDSIZE+2];
 	board();
 	board(const board& b);
 	~board();
 	board& operator=(const board& x);
-	kaku* get_kaku(int position){return &goban[(position-1)/SIZE+1][(position-1)%SIZE+1];}
+	kaku* get_kaku(int position){return &goban[(position-1)/BOARDSIZE+1][(position-1)%BOARDSIZE+1];}
 	int get_boardsize(){return board_size;}
 	cell get_cell(int i, int j);
 	void clear_board();
@@ -95,6 +95,7 @@ public:
 	void set_final_status(int i, int j, int status);
 	short find_liberty(int i, int j){return goban[i][j].findliberty();}
 	bool valid_test(kaku* target, bool player);
+	bool kotest(kaku* target);
 
 	std::set<short> validsetforblack;
 	std::set<short> validsetforwhite;

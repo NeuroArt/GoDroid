@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "board.h"
 #include <fstream>
 using namespace std;
@@ -26,14 +27,14 @@ short kaku::get_final_status(){
 }
 
 board::board(){
-	for(int i=0;i<SIZE+2;++i){
+	for(int i=0;i<BOARDSIZE+2;++i){
 		goban[0][i].c = border;
 		goban[14][i].c = border;
 		goban[i][0].c = border;
 		goban[i][14].c = border;
 	}
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j){
+	for(int i=0;i<BOARDSIZE+2;++i)
+		for(int j=0;j<BOARDSIZE+2;++j){
 			goban[i][j].parent = &goban[i][j];
 			goban[i][j].fakeliberty = 0;
 			goban[i][j].final_status = UNKNOWN;
@@ -43,18 +44,18 @@ board::board(){
 
 	validsetforblack.clear();
 	validsetforwhite.clear();
-	for (int i=1;i<=SIZE*SIZE;++i){
+	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i){
 		validsetforblack.insert(i);
 		validsetforwhite.insert(i);
-		goban[(i-1)/SIZE+1][(i-1)%SIZE+1].position=i;
+		goban[(i-1)/BOARDSIZE+1][(i-1)%BOARDSIZE+1].position=i;
 	}
 	ataripositionforblack.clear();
 	ataripositionforwhite.clear();
 }
 
 board::board(const board& b){
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j){
+	for(int i=0;i<BOARDSIZE+2;++i)
+		for(int j=0;j<BOARDSIZE+2;++j){
 			goban[i][j].c = b.goban[i][j].c;
 			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
 			goban[i][j].final_status = b.goban[i][j].final_status;
@@ -64,8 +65,8 @@ board::board(const board& b){
 /*	emptycells = new std::set<int>(*b.emptycells);*/
 	validsetforblack = b.validsetforblack;
 	validsetforwhite = b.validsetforwhite;
-	for (int i=1;i<=SIZE*SIZE;++i){
-		goban[(i-1)/SIZE+1][(i-1)%SIZE+1].position=i;
+	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i){
+		goban[(i-1)/BOARDSIZE+1][(i-1)%BOARDSIZE+1].position=i;
 	}
 	ataripositionforblack = b.ataripositionforblack;
 	ataripositionforwhite = b.ataripositionforwhite;
@@ -77,24 +78,24 @@ board::~board(){
 }
 
 void board::clear_board(){
-	for(int i=1;i<SIZE+1;++i){
-		for(int j=1;j<SIZE+1;++j){
+	for(int i=1;i<BOARDSIZE+1;++i){
+		for(int j=1;j<BOARDSIZE+1;++j){
 			goban[i][j].c = empty;
 		}
 	}
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j){
+	for(int i=0;i<BOARDSIZE+2;++i)
+		for(int j=0;j<BOARDSIZE+2;++j){
 			goban[i][j].parent = &goban[i][j];
 			goban[i][j].fakeliberty = 0;
 		}
 	ko_i = -1;
 	ko_j = -1;
 /*	emptycells->clear();*/
-// 	for (int i=1;i<=SIZE*SIZE;++i)
+// 	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i)
 // 		emptycells->insert(i);
 	validsetforblack.clear();
 	validsetforwhite.clear();
-	for (int i=1;i<=SIZE*SIZE;++i){
+	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i){
 		validsetforblack.insert(i);
 		validsetforwhite.insert(i);
 	}
@@ -175,8 +176,8 @@ void board::kill(kaku* k){ //逻辑正确的话这个函数是永远不可能执行的
 	(W(k))->findparent()->fakeliberty ++;
 	(S(k))->findparent()->fakeliberty ++;
 	(N(k))->findparent()->fakeliberty ++;
-/*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
-	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
+/*	emptycells->insert(((k-&goban[0][0])/(BOARDSIZE+2)-1)*BOARDSIZE+(k-&goban[0][0])%(BOARDSIZE+2));*/
+	//printf("%d\n",((k-&goban[0][0])/(BOARDSIZE+2)-1)*BOARDSIZE+(k-&goban[0][0])%(BOARDSIZE+2));
 }
 
 void board::killall(kaku* k, cell state,int &total){
@@ -184,13 +185,13 @@ void board::killall(kaku* k, cell state,int &total){
 	k->parent = k;
 	k->fakeliberty = 0;
 	total += 1;
-	ko_i = (k-&goban[0][0])/(SIZE+2);
-	ko_j = (k-&goban[0][0])%(SIZE+2);
+	ko_i = (k-&goban[0][0])/(BOARDSIZE+2);
+	ko_j = (k-&goban[0][0])%(BOARDSIZE+2);
 	validsetforblack.insert(k->position);
 	validsetforwhite.insert(k->position);
 
-/*	emptycells->insert(((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));*/
-	//printf("%d\n",((k-&goban[0][0])/(SIZE+2)-1)*SIZE+(k-&goban[0][0])%(SIZE+2));
+/*	emptycells->insert(((k-&goban[0][0])/(BOARDSIZE+2)-1)*BOARDSIZE+(k-&goban[0][0])%(BOARDSIZE+2));*/
+	//printf("%d\n",((k-&goban[0][0])/(BOARDSIZE+2)-1)*BOARDSIZE+(k-&goban[0][0])%(BOARDSIZE+2));
 	cell enemy = (state==white?black:white);
 	if ((E(k))->c==enemy)
 		(E(k))->findparent()->fakeliberty ++;
@@ -276,16 +277,16 @@ void board::showboard(){
 // 	ofstream fout("log3.txt", ios::app);
 // 	//printf("%c",' ');
 // 	fout << ' ';
-// 	for(int i=1;i<SIZE+1;++i){
+// 	for(int i=1;i<BOARDSIZE+1;++i){
 // 		//printf("%c",'a'+i-1);
 // 		fout << char('a' + i - 1) << ' ';
 // 	}
 // 	//printf("\n");
 // 	fout << endl;
-// 	for(int i=1;i<SIZE+1;++i){
+// 	for(int i=1;i<BOARDSIZE+1;++i){
 // 		//printf("%c",'A'+i-1);
 // 		fout << char('A' + i - 1) << ' ';
-// 		for(int j=1;j<SIZE+1;++j){
+// 		for(int j=1;j<BOARDSIZE+1;++j){
 // 			if (goban[i][j].c == empty || goban[i][j].c == border)
 // 				fout << ". ";
 // 			if (goban[i][j].c == black)
@@ -297,13 +298,13 @@ void board::showboard(){
 // 	}
 
 	printf("%c",' ');
-	for(int i=1;i<SIZE+1;++i){
+	for(int i=1;i<BOARDSIZE+1;++i){
 		printf("%c",'a'+i-1);
 	}
 	printf("\n");
-	for(int i=1;i<SIZE+1;++i){
+	for(int i=1;i<BOARDSIZE+1;++i){
 		printf("%c",'A'+i-1);
-		for(int j=1;j<SIZE+1;++j){
+		for(int j=1;j<BOARDSIZE+1;++j){
 			if(goban[i][j].c==0||goban[i][j].c==4)
 				printf("%c",43);
 			if(goban[i][j].c==1)
@@ -320,13 +321,13 @@ void board::showboardtofile(){
 	fp=fopen("board.txt","w");
 	if (fp!=NULL){
 		fprintf(fp,"%c",' ');
-		for(int i=1;i<SIZE+1;++i){
+		for(int i=1;i<BOARDSIZE+1;++i){
 			fprintf(fp,"%c",'a'+i-1);
 		}
 		fprintf(fp,"\n");
-		for(int i=1;i<SIZE+1;++i){
+		for(int i=1;i<BOARDSIZE+1;++i){
 			fprintf(fp,"%c",'A'+i-1);
-			for(int j=1;j<SIZE+1;++j){
+			for(int j=1;j<BOARDSIZE+1;++j){
 				if(goban[i][j].c==empty||goban[i][j].c==border)
 					fprintf(fp,"%c",43);
 				if(goban[i][j].c==black)
@@ -345,11 +346,11 @@ cell board::get_cell(int i, int j){
 }
 /*
 void board::compute_final_status(){
-    for(int pos = 0; pos < SIZE*SIZE; ++pos)
+    for(int pos = 0; pos < BOARDSIZE*BOARDSIZE; ++pos)
         final_status[pos] = UNKNOWN;
 
-    for(int i = 1; i < SIZE+1; ++i){
-        for(int j = 1; j < SIZE+1; ++j){
+    for(int i = 1; i < BOARDSIZE+1; ++i){
+        for(int j = 1; j < BOARDSIZE+1; ++j){
             if(get_cell(i, j) == empty){
                 for(int k = 0; k < 4; k++){
                     int ai = i + offset_x[k];
@@ -379,7 +380,7 @@ void board::compute_final_status(){
 */
 int board::black_raw(){
     int black = 0;
-    for(int pos = 0; pos < SIZE*SIZE; ++pos){
+    for(int pos = 0; pos < BOARDSIZE*BOARDSIZE; ++pos){
         if(final_status[pos] == WHITE_TERRITORY || final_status[pos] == UNKNOWN) continue;
         if(final_status[pos] == BLACK_TERRITORY){black++; continue;}
         if((final_status[pos] == ALIVE) ^ (get_cell(I(pos), J(pos)) == white)) black++;
@@ -390,8 +391,8 @@ int board::black_raw(){
 double board::judge(){
 	int b=0;
 	int w=0;
-	for(int i=1;i<SIZE+1;++i){
-		for(int j=1;j<SIZE+1;++j){
+	for(int i=1;i<BOARDSIZE+1;++i){
+		for(int j=1;j<BOARDSIZE+1;++j){
 			if (goban[i][j].c == black)
 				b++;
 			else if (goban[i][j].c == white)
@@ -415,12 +416,15 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 		ko_j=-1;
 		return true;
 	}
-	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){
+	if (coordx<1||coordx>BOARDSIZE||coordy<1||coordy>BOARDSIZE||target->c!=empty){
 		return false;
 	}
-// 	if (simulation&&((E(target))->c==alley)&&((S(target))->c==alley)&&((W(target))->c==alley)&&((N(target))->c==alley)&&(((N(target)-1)->c==alley)+((N(target)+1)->c==alley)+((S(target)-1)->c==alley)+((S(target)+1)->c==alley)>=3))
-// 		return false;
-
+	if (coordx==ko_i&&coordy==ko_j&&E(target)->c==enemy&&W(target)->c==enemy&&S(target)->c==enemy&&N(target)->c==enemy)
+		if(E(target)->findliberty()==1||W(target)->findliberty()==1||S(target)->findliberty()==1||N(target)->findliberty()==1){
+			ko_i = -1;
+			ko_j = -1;
+			return false;
+		}
 	place(player,target);
 	int total = 0;
 	if ((E(target))->c==enemy&&deathtest(E(target)))
@@ -447,14 +451,14 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 	}
 
 	//printf("%d %d %d\n",total,ko_i,ko_j);
-	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
-	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
-	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
-	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
-	if (!flag1&&!flag2&&!flag3&&!flag4){
-		kill(target); // 按道理来说，逻辑正确的话这行指令是永远不可能执行的，为求保险写上此行
-		return false;
-	}
+// 	bool flag1 = (E(target))->c==empty||((E(target))->c==alley&&(E(target))->findliberty()!=0);
+// 	bool flag2 = (W(target))->c==empty||((W(target))->c==alley&&(W(target))->findliberty()!=0);
+// 	bool flag3 = (S(target))->c==empty||((S(target))->c==alley&&(S(target))->findliberty()!=0);
+// 	bool flag4 = (N(target))->c==empty||((N(target))->c==alley&&(N(target))->findliberty()!=0);
+// 	if (!flag1&&!flag2&&!flag3&&!flag4){
+// 		kill(target); // 按道理来说，逻辑正确的话这行指令是永远不可能执行的，为求保险写上此行//自杀就自杀吧，谁也保不了你
+// 		return false;
+// 	}
 
 	if (E(target)->c==enemy){ //维护atari点
 		total = 0;
@@ -515,6 +519,10 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 		kaku::Union(target,S(target));
 	if((N(target))->c==alley)
 		kaku::Union(target,N(target));
+	if (deathtest(target)){
+		killall(target,alley,total);
+		return true;
+	}
 	total = 0;
 	ataritest(target,alley,total);
 	if (total==1){
@@ -528,8 +536,8 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 }
 
 board& board::operator=(const board& b){
-	for(int i=0;i<SIZE+2;++i)
-		for(int j=0;j<SIZE+2;++j){
+	for(int i=0;i<BOARDSIZE+2;++i)
+		for(int j=0;j<BOARDSIZE+2;++j){
 			goban[i][j].c = b.goban[i][j].c;
 			goban[i][j].fakeliberty = b.goban[i][j].fakeliberty;
 			goban[i][j].final_status = b.goban[i][j].final_status;
@@ -541,8 +549,8 @@ board& board::operator=(const board& b){
 	ko_j = b.ko_j;
 	validsetforblack = b.validsetforblack;
 	validsetforwhite = b.validsetforwhite;
-	for (int i=1;i<=SIZE*SIZE;++i){
-		goban[(i-1)/SIZE+1][(i-1)%SIZE+1].position=i;
+	for (int i=1;i<=BOARDSIZE*BOARDSIZE;++i){
+		goban[(i-1)/BOARDSIZE+1][(i-1)%BOARDSIZE+1].position=i;
 	}
 	ataripositionforblack = b.ataripositionforblack;
 	ataripositionforwhite = b.ataripositionforwhite;
@@ -569,9 +577,9 @@ int board::get_final_status(int i, int j){
 bool board::valid_test(kaku* target, bool player){
 	cell enemy = player?white:black;
 	cell alley = player?black:white;
-	short coordx = (target->position-1)/SIZE+1;
-	short coordy = (target->position-1)%SIZE+1;
-	if (coordx<1||coordx>SIZE||coordy<1||coordy>SIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){
+	short coordx = (target->position-1)/BOARDSIZE+1;
+	short coordy = (target->position-1)%BOARDSIZE+1;
+	if (coordx<1||coordx>BOARDSIZE||coordy<1||coordy>BOARDSIZE||target->c!=empty||(coordx==ko_i&&coordy==ko_j)){
 		return false;
 	}
 	(E(target))->findparent()->fakeliberty --;
@@ -602,4 +610,9 @@ bool board::valid_test(kaku* target, bool player){
 	(S(target))->findparent()->fakeliberty ++;
 	(N(target))->findparent()->fakeliberty ++;
 	return true;
+}
+
+
+bool board::kotest(kaku* target){
+	return 0;
 }

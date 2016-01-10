@@ -40,8 +40,8 @@ void montecarlo::run() {
 			int randomNumber = rand() * ataripositionalley->size() / (RAND_MAX + 1);
 			for (int i=0;i<randomNumber;i++)
 				iter++;
-			int coordX = (*iter-1) / SIZE + 1;
-			int coordY = (*iter-1) % SIZE + 1;
+			int coordX = (*iter-1) / BOARDSIZE + 1;
+			int coordY = (*iter-1) % BOARDSIZE + 1;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -56,8 +56,8 @@ void montecarlo::run() {
 			int randomNumber = rand() * ataripositionenemy->size() / (RAND_MAX + 1);
 			for (int i=0;i<randomNumber;i++)
 				iter++;
-			int coordX = (*iter-1) / SIZE + 1;
-			int coordY = (*iter-1) % SIZE + 1;
+			int coordX = (*iter-1) / BOARDSIZE + 1;
+			int coordY = (*iter-1) % BOARDSIZE + 1;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -72,8 +72,8 @@ void montecarlo::run() {
 			int randomNumber = rand() * validsetalley->size() / (RAND_MAX + 1);
 			for (int i=0;i<randomNumber;i++)
 				iter++;
-			int coordX = (*iter-1) / SIZE + 1;
-			int coordY = (*iter-1) % SIZE + 1;
+			int coordX = (*iter-1) / BOARDSIZE + 1;
+			int coordY = (*iter-1) % BOARDSIZE + 1;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
