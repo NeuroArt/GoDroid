@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include "pattern.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ void montecarlo::getInitBoard(board &inBoard) {
 
 void montecarlo::run() {
 	int fault = 0;
+	int last = 0; // last enemy move, [0,13]
 	bool flag=true;
 	//printf("random: ");
 	int triedtimes=0;
@@ -28,12 +30,14 @@ void montecarlo::run() {
 		bool flag1=false;
 		bool flag2=false;
 		bool flag3=false;
+		bool flagP = false;
 
 		set<short>* ataripositionalley = player?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
 		set<short>* validsetalley = player?(&currentBoard.validsetforblack):(&currentBoard.validsetforwhite);
 		set<short>* ataripositionenemy = (!player)?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
 		set<short>* validsetenemy = !player?(&currentBoard.validsetforblack):(&currentBoard.validsetforwhite);
 		set<short>::iterator iter;
+		int patmove;
 		while (triedtimes<=300&&!ataripositionalley->empty()){
 			triedtimes++;
 			iter = ataripositionalley->begin();
@@ -42,6 +46,7 @@ void montecarlo::run() {
 				iter++;
 			int coordX = (*iter-1) / BOARDSIZE + 1;
 			int coordY = (*iter-1) % BOARDSIZE + 1;
+			int last = *iter;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -58,6 +63,7 @@ void montecarlo::run() {
 				iter++;
 			int coordX = (*iter-1) / BOARDSIZE + 1;
 			int coordY = (*iter-1) % BOARDSIZE + 1;
+			int last = *iter;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -65,6 +71,20 @@ void montecarlo::run() {
 				break;
 			}
 			ataripositionenemy->erase(*iter);
+		}
+		while (triedtimes<=300&&!walked){
+			patmove = findPattern(&currentBoard, player, (last-1) / BOARDSIZE + 1, (last-1) % BOARDSIZE + 1);
+			if(patmove){
+				triedtimes++;
+				int coordX = (patmove-1) / BOARDSIZE + 1;
+				int coordY = (patmove-1) % BOARDSIZE + 1;
+				if (currentBoard.play(player, coordX, coordY)) {
+					player = !player;
+					walked = true;
+					flagP=true;
+					break;
+				}
+			}else break;
 		}
 		while (triedtimes<=300&&!walked&&!validsetalley->empty()){
 			triedtimes++;
@@ -74,6 +94,7 @@ void montecarlo::run() {
 				iter++;
 			int coordX = (*iter-1) / BOARDSIZE + 1;
 			int coordY = (*iter-1) % BOARDSIZE + 1;
+			int last = *iter;
 			if (currentBoard.play(player, coordX, coordY)) {
 				player = !player;
 				walked = true;
@@ -82,7 +103,7 @@ void montecarlo::run() {
 			}
 			validsetalley->erase(*iter);
 		}
-		if (!flag1&&!flag2&&!flag3){
+		if (!flag1&&!flag2&&!flag3 && !flagP){
 			player = !player;
 			walked = true;
 		}

@@ -3,6 +3,7 @@
 #include "ai.h"
 #include "UCT.h"
 #include "Parallelization.h"
+#include "pattern.h"
 
 board *brd;
 int board_size = BOARDSIZE;
@@ -13,6 +14,7 @@ static int on_board(int i, int j){return i >= 0 && i < board_size && j >= 0 && j
 
 void init_ai(){
 	brd = new board();
+	initPatterns();
 	//get_komi();
 }
 
