@@ -218,8 +218,37 @@ void initPatterns(){
     }
 }
 
-bool findPattern(unsigned short pat, int color){
+bool matchPattern(unsigned short pat, int color){
 	return ((patterns.find(pat)!=patterns.end()) || ((color == 1) && (patternsWhite.find(pat)!=patternsWhite.end())) || ((color == 2) && (patternsBlack.find(pat)!=patternsBlack.end())));
+}
+
+int findPattern(board *brd, int color, int lastx, int lasty){
+	srand(time(0));
+	int deltax[8] = {-1,0,1,-1,1,-1,0,1};
+	int deltay[8] = {-1,-1,-1,0,0,1,1,1};
+	int x[8], y[8];
+	int cnt = 0;
+	for(int i = 0; i < 8; ++i){
+		int centerx = lastx + deltax[i];
+		int centery = lasty + deltay[i];
+		int pattern[8];
+		if(centerx > 0 && centerx < 14 && centery > 0 && centery < 14){
+			for(int j = 0; j < 8; ++j){
+				pattern[j] = brd->get_cell(centerx+deltax[j],centery+deltay[j]);
+			}
+			short patt = toShort(pattern);
+			if(matchPattern(patt, color)){
+				x[cnt] = centerx;
+				y[cnt] = centery;
+				cnt++;
+			}
+		}
+	}
+	if(cnt){
+		int r = rand() % cnt;
+		return x[r] * 13 + y[r];
+	}
+	return 0;
 }
 
 int main(){

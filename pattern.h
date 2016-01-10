@@ -2,7 +2,10 @@
 #define _PATTERN_H_
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <set>
+#include "board.h"
 
 using namespace std;
 
