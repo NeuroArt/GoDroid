@@ -269,19 +269,20 @@ public:
 		return tmp->move;
 	}
 	void showTree(bool flag = 1) {
-		rootBoard.showboardtofile();
+		//rootBoard.showboardtofile();
 		Node *p = root;
 		queue<Node *> q;
 		q.push(p);
 		ofstream out("log.txt",ios::ate);
 		Node *tmp = p->lchild;
+		//q.push(tmp);
 		out <<"step"<<endl;
 		while (!q.empty()) {
 			p = q.front();
 			q.pop();
 			if (p->total)
 				//printf("%d/%d ", p->win, p->total);
-				out <<"player" << p->player <<"father: "<< (p->parent->move)/13+1<<' '<<(p->parent->move)%13+1<<" move " << (p->move)/13+1<<' '<<(p->move)%13+1<<' ' << p->win << '/' << p->total << "  winning rate: "<< double(p->win)/p->total << "  UCB Value: " << p->ucbValue <<endl;
+				out <<"player" << p->player <<" move " << (p->move)/13+1<<' '<<(p->move)%13+1<<' ' << p->win << '/' << p->total << "  winning rate: "<< double(p->win)/p->total << "  UCB Value: " << p->ucbValue <<endl;
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);
