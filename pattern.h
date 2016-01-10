@@ -35,4 +35,6 @@ bool matchPattern(unsigned short pat, int color);
 
 int findPattern(board *brd, int color, int lastx, int lasty);
 
+void printPattern(int pattern[8]);
+
 #endif

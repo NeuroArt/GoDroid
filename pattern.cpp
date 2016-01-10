@@ -243,6 +243,10 @@ int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 			}
 			short patt = toShort(pattern);
 			if(matchPattern(patt, color)){
+				//printf("center: %d %d\n", centerx, centery);
+				//printf("pattern: ");
+				//for(int i = 0; i < 8; ++i)printf("%d ",pattern[i]);
+				//printf("\n");
 				x[cnt] = centerx;
 				y[cnt] = centery;
 				cnt++;
@@ -255,6 +259,28 @@ int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 	}
 	return 0;
 }
+
+void printPattern(int pattern[8]){
+	for(int i = 0; i < 3; ++i){
+		if(pattern[i] == empty) printf("+");
+		if(pattern[i] == black) printf("X");
+		if(pattern[i] == white) printf("0");
+	}printf("\n");
+	if(pattern[3] == empty) printf("+");
+	if(pattern[3] == black) printf("X");
+	if(pattern[3] == white) printf("0");
+	printf("-");
+	if(pattern[4] == empty) printf("+");
+	if(pattern[4] == black) printf("X");
+	if(pattern[4] == white) printf("0");
+	printf("\n");
+	for(int i = 5; i < 8; ++i){
+		if(pattern[i] == empty) printf("+");
+		if(pattern[i] == black) printf("X");
+		if(pattern[i] == white) printf("0");
+	}printf("\n");
+}
+
 /*
 int main(){
     int pattern[8] = {3,3,3,3,3,3,3,3};
