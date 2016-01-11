@@ -19,6 +19,7 @@ private:
 		int total;
 		int win;
 		int AMAFwin;
+		int AMAFtotal;
 		double value() {
 			return double(win)/total;
 		}
@@ -33,6 +34,7 @@ private:
 			win = 0;
 			AMAFwin = 0;
 			total = 0;
+			AMAFtotal = 0;
 			parent = NULL;
 			lchild = NULL;
 			sibling = NULL;
@@ -301,6 +303,7 @@ public:
 		Node *target = targetTree.root;
 		target->total += source->total;
 		target->AMAFwin += source->AMAFwin;
+		target->AMAFtotal += source->AMAFtotal;
 		target->win += source->win;
 		source = source->lchild;
 		target = target->lchild;

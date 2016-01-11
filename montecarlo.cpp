@@ -54,7 +54,7 @@ void montecarlo::run() {
 			}
 			ataripositionalley->erase(*iter);//这里没有考虑周全
 		}
-		for (int k = 0; k < 6; ++k){
+		for (int k = 0; k < 9; ++k){
 			int target = rand() % (BOARDSIZE*BOARDSIZE);
 			if (currentBoard.emptytest(target))
 				if (currentBoard.play(player, (target - 1) / BOARDSIZE + 1, (target - 1) % BOARDSIZE + 1)) {
