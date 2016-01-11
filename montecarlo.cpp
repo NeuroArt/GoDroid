@@ -20,7 +20,6 @@ void montecarlo::getInitBoard(board &inBoard) {
 }
 
 void montecarlo::run() {
-	srand((unsigned)time(NULL));
 	int fault = 0;
 	int last = 0; // last enemy move, [0,13]
 	bool flag=true;
@@ -42,7 +41,7 @@ void montecarlo::run() {
 		while (triedtimes <= 300 && !ataripositionalley->empty()){
 			triedtimes++;
 			iter = ataripositionalley->begin();
-			int randomNumber = rand() * ataripositionalley->size() / (RAND_MAX + 1);
+			int randomNumber = rand() % ataripositionalley->size();
 			for (int i = 0; i < randomNumber; i++)
 				iter++;
 			int coordX = (*iter - 1) / BOARDSIZE + 1;
@@ -75,7 +74,7 @@ void montecarlo::run() {
 		while (triedtimes <= 300 && !walked&&!ataripositionenemy->empty()){
 			triedtimes++;
 			iter = ataripositionenemy->begin();
-			int randomNumber = rand() * ataripositionenemy->size() / (RAND_MAX + 1);
+			int randomNumber = rand() % ataripositionenemy->size();
 			for (int i = 0; i < randomNumber; i++)
 				iter++;
 			int coordX = (*iter - 1) / BOARDSIZE + 1;
@@ -92,7 +91,7 @@ void montecarlo::run() {
 		while (triedtimes <= 300 && !walked&&!validsetalley->empty()){
 			triedtimes++;
 			iter = validsetalley->begin();
-			int randomNumber = rand() * validsetalley->size() / (RAND_MAX + 1);
+			int randomNumber = rand() % validsetalley->size();
 			//printf("%dhere",randomNumber);
 			for (int i = 0; i < randomNumber; i++)
 				iter++;
@@ -116,9 +115,9 @@ void montecarlo::run() {
 		if (validsetalley->empty() && validsetenemy->empty() && ataripositionalley->empty() && ataripositionenemy->empty()){
 			flag = false;
 		}
-		// 		currentBoard.showboard();
-		//		printf("%d\n", last);
-		//		system("pause");
+		//currentBoard.showboard();
+		//printf("%d\n", last);
+		//system("pause");
 		// 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
 		// 			printf("%d ",*iter);
 		// 		printf("\n");

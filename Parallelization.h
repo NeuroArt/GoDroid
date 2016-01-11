@@ -16,11 +16,13 @@ struct situation {
 	board _board;
 	bool _player;
 	UCT *finalTree;
-	situation(board &inboard, bool player, UCT *_tree) {
+	int threadnumber;
+	situation(board &inboard, bool player, UCT *_tree, int serialnum) {
 		_board = inboard;
 		//cout << &inboard << ' ' << &_board << endl;
 		_player = player;
 		finalTree = _tree;
+		threadnumber = serialnum;
 	}
 };
 
@@ -37,7 +39,7 @@ public:
 		finalTree->createAllChildrenIfNone(finalTree->getRoot());
 		for (int i = 0; i < threadNumber; ++i) {
 			bool tmpPlayer = player;
-			situation *s = new situation(inboard, tmpPlayer, finalTree);
+			situation *s = new situation(inboard, tmpPlayer, finalTree, i);
 			//thread t(runUCT, s);
 			runningStack.push_back(new thread(runUCT, s));
 		}
@@ -60,6 +62,7 @@ void runUCT(situation *s) {
 	int startTime = clock();
 	int finishTime = clock();
 	int cnt = 0;
+	srand((unsigned)s->threadnumber);
 	while (finishTime - startTime <= 2500) {
 		tree.playOneSequenceInMoGo(player);
 		finishTime = clock();
