@@ -170,6 +170,9 @@ void initPatterns(){
                 int pattern1[8] = {2,1,i,1,0,j,1,k};
                 pat = toShort(pattern1);
                 erase(pat);
+                int pattern2[8] = {2,1,i,1,1,j,1,k};
+                pat = toShort(pattern2);
+                erase(pat);
             }
         }
     }
