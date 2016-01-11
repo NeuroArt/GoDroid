@@ -62,7 +62,7 @@ void runUCT(situation *s) {
 	int startTime = clock();
 	int finishTime = clock();
 	int cnt = 0;
-	srand((unsigned)s->threadnumber);
+	srand(time(NULL)+(unsigned)s->threadnumber);
 	while (finishTime - startTime <= 2500) {
 		tree.playOneSequenceInMoGo(player);
 		finishTime = clock();

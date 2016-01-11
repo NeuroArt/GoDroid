@@ -612,7 +612,9 @@ bool board::valid_test(kaku* target, bool player){
 	return true;
 }
 
-
-bool board::kotest(kaku* target){
-	return 0;
+bool board::emptytest(int target){
+	int coordx = target / BOARDSIZE + 1;
+	int coordy = target % BOARDSIZE + 1;
+	kaku* t = &goban[coordx][coordy];
+	return (t->c == empty) && (E(t)->c == empty) && (W(t)->c == empty) && (S(t)->c == empty) && (N(t)->c == empty) && ((S(t)-1)->c == empty) && ((S(t)+1)->c == empty) && ((N(t)-1)->c == empty) && ((N(t)+1)->c == empty);
 }
