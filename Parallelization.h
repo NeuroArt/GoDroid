@@ -45,9 +45,9 @@ public:
 			runningStack[i]->join();
 			delete runningStack[i];
 		}
-		(*finalTree).showTree(0);
 		//move = 10;
 		move = finalTree->getNextMove();
+		(*finalTree).showTree(0);
 	}
 	int getMove() {
 		return move;
@@ -66,7 +66,7 @@ void runUCT(situation *s) {
 		cnt++;
 	}
 	printf("thread cnt: %d\n", cnt);
-	cout << s->finalTree << endl;
+	//cout << s->finalTree << endl;
 	while (!m.try_lock());
 	int flag = tree.addFirstLevel(*(s->finalTree));
 	m.unlock();
