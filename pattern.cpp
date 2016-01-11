@@ -30,7 +30,7 @@ void toArray(unsigned short pat, int pattern[8]){
 unsigned short clockwise(unsigned short orig){
     int trans[8] = {2,4,7,1,6,0,3,5};
     unsigned short res = 0;
-    for(int i = 0; i < 7; ++i)
+    for(int i = 0; i < 8; ++i)
         res += (word(orig,trans[i])*pow(4,i));
     return res;
 }
@@ -256,7 +256,7 @@ int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
 				//printf("i=%d\n", i);
 				//printf("center: %d %d\n", centerx, centery);
 				//printf("pattern: ");
-				//for(int i = 0; i < 8; ++i)printf("%d ",pattern[i]);
+				//printShort(patt);
 				//printf("%d", patt);
 				//printf("\n");
 				x[cnt] = centerx;
@@ -283,21 +283,25 @@ void printPattern(int pattern[8]){
 	printf("Pattern: \n");
 	for(int i = 0; i < 3; ++i){
 		if(pattern[i] == empty) printf("+");
-		if(pattern[i] == black) printf("X");
-		if(pattern[i] == white) printf("0");
+		else if(pattern[i] == black) printf("X");
+		else if(pattern[i] == white) printf("0");
+		else if(pattern[i] == border) printf("=");
 	}printf("\n");
 	if(pattern[3] == empty) printf("+");
-	if(pattern[3] == black) printf("X");
-	if(pattern[3] == white) printf("0");
+	else if(pattern[3] == black) printf("X");
+	else if(pattern[3] == white) printf("0");
+	else if(pattern[3] == border) printf("=");
 	printf("-");
 	if(pattern[4] == empty) printf("+");
-	if(pattern[4] == black) printf("X");
-	if(pattern[4] == white) printf("0");
+	else if(pattern[4] == black) printf("X");
+	else if(pattern[4] == white) printf("0");
+	else if(pattern[4] == border) printf("=");
 	printf("\n");
 	for(int i = 5; i < 8; ++i){
 		if(pattern[i] == empty) printf("+");
-		if(pattern[i] == black) printf("X");
-		if(pattern[i] == white) printf("0");
+		else if(pattern[i] == black) printf("X");
+		else if(pattern[i] == white) printf("0");
+		else if(pattern[i] == border) printf("=");
 	}printf("\n\n");
 }
 

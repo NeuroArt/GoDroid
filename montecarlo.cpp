@@ -118,6 +118,7 @@ void montecarlo::run() {
 //		system("pause");
 // 		currentBoard.showboard();
 //		printf("%d\n", last);
+//		system("pause");
 // 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
 // 			printf("%d ",*iter);
 // 		printf("\n");
@@ -130,7 +131,6 @@ void montecarlo::run() {
 // 		for (iter=validsetenemy->begin();iter!=validsetenemy->end();iter++)
 // 			printf("%d ",*iter);
 // 		printf("\n");
-// 
 	}
 	//printf("\n");
 	winner = currentBoard.judge()>0?1:0;
