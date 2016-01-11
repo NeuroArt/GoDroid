@@ -197,7 +197,7 @@ void initPatterns(){
         for(int j = 0; j < 3; ++j){
             int pattern[8] = {2,0,i,1,j,3,3,3};
             pat = toShort(pattern);
-            insert(pat);
+            insertBlack(pat);
         }
     }
     for(int i = 0; i < 3; ++i){
