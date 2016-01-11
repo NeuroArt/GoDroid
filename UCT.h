@@ -173,8 +173,7 @@ public:
 			q = q->parent;
 		}
 		bool player = root->player;
-		if (!back.empty())
-			back.pop();
+
 		while (!back.empty()) {
 			int num = back.top();
 			back.pop();
@@ -251,7 +250,13 @@ public:
 		} while (1);
 		if (p != NULL) {
 			board currentBoard(getBoard(p));
-			montecarlo m(currentBoard,player);
+			bool tmpplayer = player;
+			Node* tmpp = p;
+			while (tmpp->parent != root){
+				tmpplayer = !tmpplayer;
+				tmpp = tmpp->parent;
+			}
+			montecarlo m(currentBoard,tmpplayer);
 			update(p, m.getWinner());
 		}
 		else {
