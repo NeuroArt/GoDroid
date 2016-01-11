@@ -23,7 +23,6 @@ void montecarlo::run() {
 	int fault = 0;
 	int last = 0; // last enemy move, [0,13]
 	bool flag=true;
-	//printf("random: ");
 	int triedtimes=0;
 	while (flag) {
 		bool walked = false;
@@ -55,7 +54,7 @@ void montecarlo::run() {
 			}
 			ataripositionalley->erase(*iter);//这里没有考虑周全
 		}
-		while (triedtimes<=300&&!walked && last!=0){
+		while (triedtimes<=300&&!walked&&last!=0){
 			patmove = findPattern(&currentBoard, player, (last-1) / BOARDSIZE + 1, (last-1) % BOARDSIZE + 1);
 			if(patmove){
 				triedtimes++;

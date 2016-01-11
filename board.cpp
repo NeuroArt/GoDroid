@@ -305,11 +305,11 @@ void board::showboard(){
 	for(int i=1;i<BOARDSIZE+1;++i){
 		printf("%c",'A'+i-1);
 		for(int j=1;j<BOARDSIZE+1;++j){
-			if(goban[i][j].c==0||goban[i][j].c==4)
+			if(goban[i][j].c==empty||goban[i][j].c==border)
 				printf("%c",43);
-			if(goban[i][j].c==1)
+			if(goban[i][j].c==black)
 				printf("%c",'X');
-			if(goban[i][j].c==2)
+			if(goban[i][j].c==white)
 				printf("%c",'O');
 		}
 		printf("\n");
