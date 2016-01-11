@@ -113,9 +113,9 @@ void montecarlo::run() {
 		if (validsetalley->empty()&&validsetenemy->empty()&&ataripositionalley->empty()&&ataripositionenemy->empty()){
 			flag=false;
 		}
-//		currentBoard.showboard();
-//		printf("%d\n", triedtimes);
-//		system("pause");
+		currentBoard.showboard();
+		printf("%d\n", triedtimes);
+		system("pause");
 // 		currentBoard.showboard();
 //		printf("%d\n", last);
 //		system("pause");

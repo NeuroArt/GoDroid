@@ -261,7 +261,7 @@ public:
 		}	
 	}
 	int getNextMove() {
-		Node *tmp = root->findBestMove(); //此处在第一层节点未完全展开时存在bug
+		Node *tmp = root->findBestChild(); //此处在第一层节点未完全展开时存在bug
 		ofstream out("log2.txt", ios::app);
 		int i = tmp->move / 13 + 1;
 		int j = tmp->move % 13 + 1;

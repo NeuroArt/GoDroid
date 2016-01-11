@@ -45,9 +45,9 @@ public:
 			runningStack[i]->join();
 			delete runningStack[i];
 		}
-		(*finalTree).showTree(0);
 		//move = 10;
 		move = finalTree->getNextMove();
+		(*finalTree).showTree(0);
 	}
 	int getMove() {
 		return move;
