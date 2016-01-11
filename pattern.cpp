@@ -234,7 +234,6 @@ bool matchPattern(unsigned short pat, int color){
 }
 
 int findPattern(board *brd, int color, int lastx, int lasty){ //lastxy:[1,13];
-	srand(time(0));
 	if(lastx*lasty == 0) return 0;
 	int deltax[8] = {-1,0,1,-1,1,-1,0,1};
 	int deltay[8] = {-1,-1,-1,0,0,1,1,1};
