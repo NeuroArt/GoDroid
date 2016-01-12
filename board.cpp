@@ -455,12 +455,18 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 	if (coordx<1||coordx>BOARDSIZE||coordy<1||coordy>BOARDSIZE||target->c!=empty){
 		return false;
 	}
-	if (coordx==ko_i&&coordy==ko_j&&E(target)->c==enemy&&W(target)->c==enemy&&S(target)->c==enemy&&N(target)->c==enemy)
-		if(E(target)->findliberty()==1||W(target)->findliberty()==1||S(target)->findliberty()==1||N(target)->findliberty()==1){
-			ko_i = -1;
-			ko_j = -1;
-			return false;
-		}
+	if (coordx == ko_i&&coordy == ko_j && (E(target)->c == enemy || E(target)->c == border)
+		&& (W(target)->c == enemy || W(target)->c == border)
+		&& (S(target)->c == enemy || S(target)->c == border)
+		&& (N(target)->c == enemy || N(target)->c == border))
+		if ((E(target)->c == enemy&&E(target)->findliberty() == 1)||
+			(W(target)->c == enemy&&W(target)->findliberty() == 1)||
+			(S(target)->c == enemy&&S(target)->findliberty() == 1)||
+			(N(target)->c == enemy&&N(target)->findliberty() == 1)){
+				ko_i = -1;
+				ko_j = -1;
+				return false;
+			}
 	place(player,target);
 	int total = 0;
 	if ((E(target))->c==enemy&&deathtest(E(target)))
