@@ -62,7 +62,6 @@ main(int argc, char **argv)
   /* Optionally a random seed can be passed as an argument to the program. */
   if (argc > 1)
     sscanf(argv[1], "%u", &random_seed);
-  srand(time(0));
 
   /* Make sure that stdout is not block buffered. */
   setbuf(stdout, NULL);

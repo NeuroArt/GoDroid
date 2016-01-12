@@ -19,6 +19,7 @@ private:
 		int total;
 		int win;
 		int AMAFwin;
+		int AMAFtotal;
 		double value() {
 			return double(win)/total;
 		}
@@ -33,6 +34,7 @@ private:
 			win = 0;
 			AMAFwin = 0;
 			total = 0;
+			AMAFtotal = 0;
 			parent = NULL;
 			lchild = NULL;
 			sibling = NULL;
@@ -192,38 +194,36 @@ public:
 			set<short>* ataripositionenemy = p->player?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
 
 			std::set<short>::iterator iter;
-			if (!ataripositionalley->empty())
-				for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++){
-					//printf("atari position alley:%d length:%d\n",*iter,ataripositionalley->size());
-					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
-						bool tmpPlayer = !(p->player);
-						Node *tmp= new Node(tmpPlayer);
-						short pos = *iter;
-						tmp->move = pos-1;
-						p->addChild(tmp);
-					}
-				}
-			if (!ataripositionenemy->empty())
-				for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++){
-					//printf("atari position enemy:%d length:%d\n",*iter,ataripositionenemy->size());
-					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
-						bool tmpPlayer = !(p->player);
-						Node *tmp= new Node(tmpPlayer);
-						short pos = *iter;
-						tmp->move = pos-1;
-						p->addChild(tmp);
-					}
-				}
-			if (p->lchild == NULL){
-				std::set<short>* validset = (p->player?(&currentBoard.validsetforwhite):(&currentBoard.validsetforblack));
-				if (!validset->empty()){
-					for (iter=validset->begin();iter!=validset->end();iter++){
-						bool tmpPlayer = !(p->player);
-						Node *tmp= new Node(tmpPlayer);
-						short pos = *iter;
-						tmp->move = pos-1;
-						p->addChild(tmp);
-					}
+//			if (!ataripositionalley->empty())
+//				for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++){
+//					//printf("atari position alley:%d length:%d\n",*iter,ataripositionalley->size());
+//					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
+//						bool tmpPlayer = !(p->player);
+//						Node *tmp= new Node(tmpPlayer);
+//						short pos = *iter;
+//						tmp->move = pos-1;
+//						p->addChild(tmp);
+//					}
+//				}
+//			if (!ataripositionenemy->empty())
+//				for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++){
+//					//printf("atari position enemy:%d length:%d\n",*iter,ataripositionenemy->size());
+//					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
+//						bool tmpPlayer = !(p->player);
+//						Node *tmp= new Node(tmpPlayer);
+//						short pos = *iter;
+//						tmp->move = pos-1;
+//						p->addChild(tmp);
+//					}
+//				}
+			std::set<short>* validset = (p->player?(&currentBoard.validsetforwhite):(&currentBoard.validsetforblack));
+			if (!validset->empty()){
+				for (iter=validset->begin();iter!=validset->end();iter++){
+					bool tmpPlayer = !(p->player);
+					Node *tmp= new Node(tmpPlayer);
+					short pos = *iter;
+					tmp->move = pos-1;
+					p->addChild(tmp);
 				}
 			}
 		}
@@ -303,6 +303,7 @@ public:
 		Node *target = targetTree.root;
 		target->total += source->total;
 		target->AMAFwin += source->AMAFwin;
+		target->AMAFtotal += source->AMAFtotal;
 		target->win += source->win;
 		source = source->lchild;
 		target = target->lchild;
