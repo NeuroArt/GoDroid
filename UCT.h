@@ -244,10 +244,10 @@ public:
 			s = s->parent;
 		}
 	}
-	void playOneSequenceInMoGo(bool player) {
+	bool playOneSequenceInMoGo(bool player) {
 		Node* p = root;
 		bool flag = createAllChildrenIfNone(p); //如果flag为0，说明root下没有节点，且创建新节点失败
-		if(!flag) {} //此时该PASS了
+		if(!flag) {return 0;} //此时该PASS了
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
@@ -270,6 +270,7 @@ public:
 			update(p, m.getWinner());
 			AMAFAdd(m);	//新增
 		}
+		return 1;
 	}
 	int getNextMove() {
 		Node *tmp = root->findBestChild(); //此处在第一层节点未完全展开时存在bug

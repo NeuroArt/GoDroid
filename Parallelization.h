@@ -48,7 +48,9 @@ public:
 			delete runningStack[i];
 		}
 		//move = 10;
-		move = finalTree->getNextMove();
+		if(finalTree->getRoot->total == 0) move = 0; //由于没有从线程合并，root total必然为0，则表示该PASS了
+		else
+			move = finalTree->getNextMove();
 		(*finalTree).showTree(0);
 	}
 	int getMove() {
@@ -64,7 +66,8 @@ void runUCT(situation *s) {
 	int cnt = 0;
 	srand(time(NULL)+(unsigned)s->threadnumber);
 	while (finishTime - startTime <= 2500) {
-		tree.playOneSequenceInMoGo(player);
+		bool flag = tree.playOneSequenceInMoGo(player);
+		if(!flag) return; //如果在此处return，则不会对外层的UCT树进行合并
 		finishTime = clock();
 		cnt++;
 	}
