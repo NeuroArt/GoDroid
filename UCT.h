@@ -11,6 +11,8 @@
 
 #define largeFloat 1000000000000.0
 
+#define AMAFratio 0.5
+
 using namespace std;
 
 class UCT {
@@ -21,7 +23,10 @@ private:
 		int AMAFwin;
 		int AMAFtotal;
 		double value() {
-			return double(win)/total;
+			if (AMAFtotal != 0)
+				return AMAFratio*(double(AMAFwin) / AMAFtotal) + (1 - AMAFratio)*(double(win) / total);
+			else
+				return double(win) / total;
 		}
 		Node *parent, *lchild, *sibling;
 		//board currentBoard;
@@ -103,9 +108,9 @@ private:
 		Node* findBestChild() {
 			Node* bestChild = NULL;
 			double explore_coeff = log(double(total)); //log为0时可能出错
-			
+
 			double bestUrgency = -largeFloat;
-			
+
 			Node *p = lchild;
 			while (p != NULL) {
 				double childUrgency = p->getUCBValue(explore_coeff);
@@ -161,9 +166,9 @@ public:
 		root->freeSubtree(root);
 		delete root;
 		/*while (garbage != NULL) {
-			Node *p = garbage;
-			garbage = garbage->sibling;
-			delete p;
+		Node *p = garbage;
+		garbage = garbage->sibling;
+		delete p;
 		}*/
 	}
 	board getBoard(Node *p) {
@@ -190,39 +195,39 @@ public:
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			board currentBoard(getBoard(p));
-			set<short>* ataripositionalley = p->player?(&currentBoard.ataripositionforwhite):(&currentBoard.ataripositionforblack);
-			set<short>* ataripositionenemy = p->player?(&currentBoard.ataripositionforblack):(&currentBoard.ataripositionforwhite);
+			set<short>* ataripositionalley = p->player ? (&currentBoard.ataripositionforwhite) : (&currentBoard.ataripositionforblack);
+			set<short>* ataripositionenemy = p->player ? (&currentBoard.ataripositionforblack) : (&currentBoard.ataripositionforwhite);
 
 			std::set<short>::iterator iter;
-//			if (!ataripositionalley->empty())
-//				for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++){
-//					//printf("atari position alley:%d length:%d\n",*iter,ataripositionalley->size());
-//					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
-//						bool tmpPlayer = !(p->player);
-//						Node *tmp= new Node(tmpPlayer);
-//						short pos = *iter;
-//						tmp->move = pos-1;
-//						p->addChild(tmp);
-//					}
-//				}
-//			if (!ataripositionenemy->empty())
-//				for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++){
-//					//printf("atari position enemy:%d length:%d\n",*iter,ataripositionenemy->size());
-//					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
-//						bool tmpPlayer = !(p->player);
-//						Node *tmp= new Node(tmpPlayer);
-//						short pos = *iter;
-//						tmp->move = pos-1;
-//						p->addChild(tmp);
-//					}
-//				}
-			std::set<short>* validset = (p->player?(&currentBoard.validsetforwhite):(&currentBoard.validsetforblack));
+			//			if (!ataripositionalley->empty())
+			//				for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++){
+			//					//printf("atari position alley:%d length:%d\n",*iter,ataripositionalley->size());
+			//					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
+			//						bool tmpPlayer = !(p->player);
+			//						Node *tmp= new Node(tmpPlayer);
+			//						short pos = *iter;
+			//						tmp->move = pos-1;
+			//						p->addChild(tmp);
+			//					}
+			//				}
+			//			if (!ataripositionenemy->empty())
+			//				for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++){
+			//					//printf("atari position enemy:%d length:%d\n",*iter,ataripositionenemy->size());
+			//					if (currentBoard.valid_test(currentBoard.get_kaku(*iter),!p->player)){
+			//						bool tmpPlayer = !(p->player);
+			//						Node *tmp= new Node(tmpPlayer);
+			//						short pos = *iter;
+			//						tmp->move = pos-1;
+			//						p->addChild(tmp);
+			//					}
+			//				}
+			std::set<short>* validset = (p->player ? (&currentBoard.validsetforwhite) : (&currentBoard.validsetforblack));
 			if (!validset->empty()){
-				for (iter=validset->begin();iter!=validset->end();iter++){
+				for (iter = validset->begin(); iter != validset->end(); iter++){
 					bool tmpPlayer = !(p->player);
-					Node *tmp= new Node(tmpPlayer);
+					Node *tmp = new Node(tmpPlayer);
 					short pos = *iter;
-					tmp->move = pos-1;
+					tmp->move = pos - 1;
 					p->addChild(tmp);
 				}
 			}
@@ -256,14 +261,15 @@ public:
 				tmpplayer = !tmpplayer;
 				tmpp = tmpp->parent;
 			}
-			montecarlo m(currentBoard,tmpplayer);
+			montecarlo m(currentBoard, tmpplayer);
 			update(p, m.getWinner());
+			AMAFAdd(m);	//新增
 		}
 		else {
 			board currentBoard(getBoard(p->parent));
-			montecarlo m(currentBoard,player);
+			montecarlo m(currentBoard, player);
 			update(p->parent, m.getWinner());
-		}	
+		}
 	}
 	int getNextMove() {
 		Node *tmp = root->findBestChild(); //此处在第一层节点未完全展开时存在bug
@@ -278,16 +284,18 @@ public:
 		Node *p = root;
 		queue<Node *> q;
 		q.push(p);
-		ofstream out("log.txt",ios::ate);
+		ofstream out("log.txt", ios::ate);
 		Node *tmp = p->lchild;
 		//q.push(tmp);
-		out <<"step"<<endl;
+		out << "step" << endl;
 		while (!q.empty()) {
 			p = q.front();
 			q.pop();
-			if (p->total)
+			if (p->total){
 				//printf("%d/%d ", p->win, p->total);
-				out <<"player" << p->player <<" move " << (p->move)/13+1<<' '<<(p->move)%13+1<<' ' << p->win << '/' << p->total << "  winning rate: "<< double(p->win)/p->total << "  UCB Value: " << p->ucbValue <<endl;
+				out << "player" << p->player << " move " << (p->move) / 13 + 1 << ' ' << (p->move) % 13 + 1 << ' ' << p->win << '/' << p->total << "  winning rate: " << double(p->win) / p->total << "  UCB Value: " << p->ucbValue << endl;
+				out << "AMAFWIN" << p->AMAFwin << " AMAFtotal " << p->AMAFtotal << endl;
+			}
 			Node *tmp = p->lchild;
 			while (tmp != NULL) {
 				q.push(tmp);
@@ -312,6 +320,7 @@ public:
 			if (source->move != target->move) return 0;
 			target->total += source->total;
 			target->AMAFwin += source->AMAFwin;
+			target->AMAFtotal += source->AMAFtotal;
 			target->win += source->win;
 			source = source->sibling;
 			target = target->sibling;
@@ -320,6 +329,17 @@ public:
 	}
 	Node* getRoot() {
 		return root;
+	}
+	void AMAFAdd(montecarlo &m) {
+		Node *p = root->lchild;
+		bool winner = m.getWinner();
+		while (p != NULL) {
+			if (m.checkposition(p->move,p->player)) {
+				p->AMAFtotal++;
+				if (p->player == winner) p->AMAFwin++;
+			}
+			p = p->sibling;
+		}
 	}
 };
 

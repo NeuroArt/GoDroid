@@ -124,9 +124,9 @@ void montecarlo::run() {
 		if (validsetalley->empty() && validsetenemy->empty() && ataripositionalley->empty() && ataripositionenemy->empty()){
 			flag = false;
 		}
-		currentBoard.showboard();
-		printf("%d\n", last);
-		system("pause");
+		//currentBoard.showboard();
+		//printf("%d\n", last);
+		//system("pause");
 		// 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
 		// 			printf("%d ",*iter);
 		// 		printf("\n");
@@ -148,4 +148,11 @@ void montecarlo::run() {
 
 bool montecarlo::getWinner() {
 	return winner;
+}
+
+bool montecarlo::checkposition(int move, bool player){
+	cell target = player ? black : white;
+	int coordx = move / BOARDSIZE + 1;
+	int coordy = move % BOARDSIZE + 1;
+	return currentBoard.goban[coordx][coordy].c == target;
 }

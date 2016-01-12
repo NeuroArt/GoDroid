@@ -1,4 +1,3 @@
-
 #include <ctime>
 #include "ai.h"
 #include "UCT.h"
@@ -180,7 +179,7 @@ void set_final_status(int i, int j, int status){
 
 void generate_move(int *i, int *j, int color) { //新的generate_move 使用了并行
 	bool player = color == BLACK ? 1 : 0;
-	Parallelization para(*brd, player, 1);//并行类，还未测试
+	Parallelization para(*brd, player, THREADTOTAL);//并行类，还未测试
 	int mov = para.getMove();
 	*i = mov / BOARDSIZE;
 	*j = mov % BOARDSIZE;

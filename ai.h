@@ -9,6 +9,8 @@
 #define NAME "Neuroart"
 #define VERSION "0.01"
 
+#define THREADTOTAL 4
+
 #define MIN_BOARD 2
 #define MAX_BOARD 23
 
