@@ -439,8 +439,7 @@ double board::njudge(){
 				w++;
 			else if(get_final_status(i,j) == BLACK_TERRITORY || (get_final_status(i,j) == ALIVE ^ get_cell(i,j) == white))
 				b++;
-	return b-w-6.5
-
+	return b - w - 6.5;
 }
 
 bool board::play(bool player,int coordx, int coordy, bool simulation){

@@ -14,6 +14,7 @@ public:
 	void getInitBoard(board &inBoard);
 	void run();
 	bool getWinner();
+	bool checkposition(int move,bool player);
 };
 
 #endif

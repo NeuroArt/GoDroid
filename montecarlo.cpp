@@ -1,4 +1,4 @@
-#include "montecarlo.h"
+ï»¿#include "montecarlo.h"
 #include "board.h"
 #include <stdlib.h>
 #include <time.h>
@@ -52,7 +52,7 @@ void montecarlo::run() {
 				flag1 = true;
 				break;
 			}
-			ataripositionalley->erase(*iter);//ÕâÀïÃ»ÓÐ¿¼ÂÇÖÜÈ«
+			ataripositionalley->erase(*iter);//ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½ï¿½È«
 		}
 		for (int k = 0; k < 9; ++k){
 			int target = rand() % (BOARDSIZE*BOARDSIZE);
@@ -148,4 +148,11 @@ void montecarlo::run() {
 
 bool montecarlo::getWinner() {
 	return winner;
+}
+
+bool montecarlo::checkposition(int move, bool player){
+	cell target = player ? black : white;
+	int coordx = move / BOARDSIZE + 1;
+	int coordy = move % BOARDSIZE + 1;
+	return currentBoard.goban[coordx][coordy].c == target;
 }
