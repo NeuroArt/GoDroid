@@ -89,6 +89,7 @@ public:
 	void showboard(char *str);
 	void showboardtofile();
 	double judge();//目前用来凑数的判断函数，返回值为黑棋比白棋多多少子。
+	double njudge();
 	//std::set<int>* getemptycells(); //function cancelled
 	bool play(bool player,int coordx, int coordy, bool simulation=true);
 	int get_final_status(int i, int j);

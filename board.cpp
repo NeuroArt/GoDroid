@@ -406,6 +406,43 @@ double board::judge(){
 	return b-w-6.5;
 }
 
+
+double board::njudge(){
+	int b = 0;
+	int w = 0;
+	for(int i = 1; i <= BOARDSIZE; ++i)
+		for(int j = 1; j <= BOARDSIZE; ++j)
+			if(get_cell(i,j) == empty)
+				for(int k = 0; j < 4; ++k){
+					int ai = i + offset_x[k];
+					int aj = j + offset_y[k];
+					if(ai<1 || ai>BOARDSIZE || aj<1 || aj>BOARDSIZE)
+						continue;
+					if(get_final_status(ai,aj) == UNKNOWN){
+						if(get_cell(ai,aj) == empty){
+							if(find_liberty(ai,aj) > 1)
+								set_final_status(ai,aj,ALIVE);
+							else
+								set_final_status(ai,aj,DEAD);
+						}
+					}
+					if(get_final_status(i,j) == UNKNOWN){
+						if((get_final_status(ai,aj) == ALIVE) ^ (get_cell(ai,aj) == white))
+							set_final_status(i,j,BLACK_TERRITORY);
+						else
+							set_final_status(i,j,WHITE_TERRITORY);
+					}
+				}
+	for(int i = 1; i <= BOARDSIZE; ++i)
+		for(int j = 1; j <= BOARDSIZE; ++j)
+			if(get_final_status(i,j) == WHITE_TERRITORY || (get_final_status(i,j) == ALIVE ^ get_cell(i,j) == black))
+				w++;
+			else if(get_final_status(i,j) == BLACK_TERRITORY || (get_final_status(i,j) == ALIVE ^ get_cell(i,j) == white))
+				b++;
+	return b-w-6.5
+
+}
+
 bool board::play(bool player,int coordx, int coordy, bool simulation){
 	kaku* target = &goban[coordx][coordy];
 	cell enemy = player?white:black;
