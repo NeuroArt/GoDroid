@@ -180,17 +180,22 @@ void set_final_status(int i, int j, int status){
 void generate_move(int *i, int *j, int color) { //新的generate_move 使用了并行
 	bool player = color == BLACK ? 1 : 0;
 	Parallelization para(*brd, player, THREADTOTAL);//并行类，还未测试
-	int mov = para.getMove();
+	int mov = para.getMove(); //0-168，-1是pass
+	if(mov == -1){
+		*i = -1; *j = -1;
+		return;
+	}
 	*i = mov / BOARDSIZE;
 	*j = mov % BOARDSIZE;
+	//ij: 0-12, -1,-1 if pass
 }
 
 void play_move(int i, int j, int color){
-	int mov = i*BOARDSIZE + j;
-	int posX = mov / BOARDSIZE + 1;
-	int posY = mov % BOARDSIZE + 1;
+	int posX = i + 1;
+	int posY = j + 1;
 	bool flag = color==BLACK?true:false;
-	brd->play(flag, posX, posY, false);
+	//XY:1-13; 0,0 means pass
+	brd->play(flag, posX, posY, false); 
 }
 
 int get_final_status(int i, int j){return brd->get_final_status(i+1, j+1);}

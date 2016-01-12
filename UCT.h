@@ -276,6 +276,8 @@ public:
 		ofstream out("log2.txt", ios::app);
 		int i = tmp->move / 13 + 1;
 		int j = tmp->move % 13 + 1;
+		//i,j:1-13
+		//tmp:0-168
 		out << "player" << tmp->player << ' ' << i << ' ' << j << " UCB: " << tmp->ucbValue << endl;
 		return tmp->move;
 	}
