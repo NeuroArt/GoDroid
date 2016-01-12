@@ -476,7 +476,7 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 		ko_i = -1;
 		ko_j = -1;
 	}
-	else{
+	else if(total==1){
 		if(player&&!valid_test(&goban[ko_i][ko_j],0))
 			validsetforwhite.erase(goban[ko_i][ko_j].position);
 		else if(!player&&!valid_test(&goban[ko_i][ko_j],1))
@@ -568,7 +568,7 @@ bool board::play(bool player,int coordx, int coordy, bool simulation){
 		else
 			ataripositionforwhite.insert(atariposition);
 	}
-	refreshtest(N(target));
+	refreshtest(target);
 	return true;
 }
 
