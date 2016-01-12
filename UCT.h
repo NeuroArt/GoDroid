@@ -126,6 +126,7 @@ private:
 		Node* findBestMove() {
 			Node* bestMove = NULL;
 			Node *p = lchild;
+			if(p == NULL) return this; //如果没有儿子，则返回本节点
 			double bestValue = p->value();
 			while (p != NULL) {
 				if (p->value() >= bestValue) {
@@ -191,7 +192,7 @@ public:
 		}
 		return currentBoard;
 	}
-	void createAllChildrenIfNone(Node *p) {
+	bool createAllChildrenIfNone(Node *p) {
 		//assert(p != NULL);
 		if (p->lchild == NULL) {
 			board currentBoard(getBoard(p));
@@ -232,7 +233,9 @@ public:
 					p->addChild(tmp);
 				}
 			}
+			else return 0;
 		}
+		return 1;
 	}
 	void update(Node *s, bool winner) {
 		while (s != NULL) {
@@ -243,7 +246,8 @@ public:
 	}
 	void playOneSequenceInMoGo(bool player) {
 		Node* p = root;
-		createAllChildrenIfNone(p);
+		bool flag = createAllChildrenIfNone(p); //如果flag为0，说明root下没有节点，且创建新节点失败
+		if(!flag) {} //此时该PASS了
 		do {
 			p = p->findBestChild();
 			//if (p == NULL) return;
@@ -254,7 +258,7 @@ public:
 				break;
 			}
 		} while (1);
-		if (p != NULL) {
+		if (p != NULL) { //此时的p为原节点或原节点的最佳儿子
 			board currentBoard(getBoard(p));
 			bool tmpplayer = player;
 			Node* tmpp = p;
@@ -265,11 +269,6 @@ public:
 			montecarlo m(currentBoard, tmpplayer);
 			update(p, m.getWinner());
 			AMAFAdd(m);	//新增
-		}
-		else {
-			board currentBoard(getBoard(p->parent));
-			montecarlo m(currentBoard, player);
-			update(p->parent, m.getWinner());
 		}
 	}
 	int getNextMove() {
