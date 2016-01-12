@@ -223,17 +223,21 @@ public:
 			//					}
 			//				}
 			std::set<short>* validset = (p->player ? (&currentBoard.validsetforwhite) : (&currentBoard.validsetforblack));
+			bool flag = false;
+			bool tmpPlayer = !(p->player);
 			if (!validset->empty()){
 				for (iter = validset->begin(); iter != validset->end(); iter++){
-
-					bool tmpPlayer = !(p->player);
-					Node *tmp = new Node(tmpPlayer);
-					short pos = *iter;
-					tmp->move = pos - 1;
-					p->addChild(tmp);
+					if (currentBoard.valid_test(currentBoard.get_kaku(*iter), tmpPlayer)){
+						flag = true;
+						Node *tmp = new Node(tmpPlayer);
+						short pos = *iter;
+						tmp->move = pos - 1;
+						p->addChild(tmp);
+					}
 				}
 			}
-			else return 0;
+			if (!flag)
+				return 0;
 		}
 		return 1;
 	}

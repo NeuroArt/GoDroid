@@ -1,5 +1,4 @@
-
-#ifndef _PARALLELIZATION_H
+﻿#ifndef _PARALLELIZATION_H
 #define _PARALLELIZATION_H
 
 #include "UCT.h"
@@ -48,7 +47,7 @@ public:
 			delete runningStack[i];
 		}
 		//move = 10;
-		if(finalTree->getRoot->total == 0) move = -1; //由于没有从线程合并，root total必然为0，则表示该PASS了
+		if(finalTree->getRoot()->total == 0) move = -1; //由于没有从线程合并，root total必然为0，则表示该PASS了
 		else
 			move = finalTree->getNextMove();
 		(*finalTree).showTree(0);
