@@ -1,4 +1,4 @@
-#include "montecarlo.h"
+ï»¿#include "montecarlo.h"
 #include "board.h"
 #include <stdlib.h>
 #include <time.h>
@@ -52,7 +52,7 @@ void montecarlo::run() {
 				flag1 = true;
 				break;
 			}
-			ataripositionalley->erase(*iter);//ÕâÀïÃ»ÓÐ¿¼ÂÇÖÜÈ«
+			ataripositionalley->erase(*iter);//ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½ï¿½È«
 		}
 		for (int k = 0; k < 9; ++k){
 			int target = rand() % (BOARDSIZE*BOARDSIZE);
@@ -124,9 +124,9 @@ void montecarlo::run() {
 		if (validsetalley->empty() && validsetenemy->empty() && ataripositionalley->empty() && ataripositionenemy->empty()){
 			flag = false;
 		}
-		//currentBoard.showboard();
-		//printf("%d\n", last);
-		//system("pause");
+		currentBoard.showboard();
+		printf("%d\n", last);
+		system("pause");
 		// 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
 		// 			printf("%d ",*iter);
 		// 		printf("\n");
