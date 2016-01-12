@@ -224,6 +224,7 @@ public:
 			std::set<short>* validset = (p->player ? (&currentBoard.validsetforwhite) : (&currentBoard.validsetforblack));
 			if (!validset->empty()){
 				for (iter = validset->begin(); iter != validset->end(); iter++){
+
 					bool tmpPlayer = !(p->player);
 					Node *tmp = new Node(tmpPlayer);
 					short pos = *iter;
@@ -280,7 +281,7 @@ public:
 		return tmp->move;
 	}
 	void showTree(bool flag = 1) {
-		//rootBoard.showboardtofile();
+		rootBoard.showboardtofile();
 		Node *p = root;
 		queue<Node *> q;
 		q.push(p);
