@@ -32,7 +32,7 @@ enum patternType{ //type of patterns
 
 struct typeTrans{
 	int x, y;
-	int pat;
+	int pat, smallType;
 	int transx, transy;
 	int ex;
 	int clock;
@@ -48,7 +48,7 @@ void symmetryYDyn(int orig[], int size);
 
 void initPatternDyn(); // 待实现，需要手动建立
 
-void insertPatternDyn(int pat[], int size, int type); 
+void insertPatternDyn(int pat[], int size, int type, int smallType); 
 // 手动建立pattern的时候使用这个函数，pat为size*size
 
 bool samePattern(int x[], int existed[], int size, typeTrans *tt); 

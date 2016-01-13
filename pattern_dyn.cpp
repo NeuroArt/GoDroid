@@ -5,9 +5,9 @@
 
 using namespace std;
 
-int pattern_3[MAXPATTERN][10];
-int pattern_5[MAXPATTERN][26];
-int pattern_7[MAXPATTERN][50];
+int pattern_3[MAXPATTERN][11];
+int pattern_5[MAXPATTERN][27];
+int pattern_7[MAXPATTERN][51];
 
 bool validCoord(int centerx, int centery){//center:1-13
 	return ((centerx>=0) && (centery>=0) && (centerx<=14) && (centery<=14));
@@ -64,31 +64,34 @@ void initPatternDyn(){
     int pattern1[9] = {2,1,6,2,6,0,6,0,6};
     int pattern2[9] = {2,1,0,0,6,0,6,0,6};
     int pattern3[9] = {2,1,1,0,black,0,6,0,6};
-	insertPatternDyn(pattern0, 3, hane);
-	insertPatternDyn(pattern1, 3, hane);
-	insertPatternDyn(pattern2, 3, hane);
-	insertPatternDyn(pattern3, 3, hane);
+	insertPatternDyn(pattern0, 3, hane,1);
+	insertPatternDyn(pattern1, 3, hane,2);
+	insertPatternDyn(pattern2, 3, hane,3);
+	insertPatternDyn(pattern3, 3, hane,4);
 	int pattern4[9] = {arbitrary,black,arbitrary,white,arbitrary,white,notWhite,notWhite,notWhite};
-	insertPatternDyn(pattern4, 3, cut2);
+	insertPatternDyn(pattern4, 3, cut2,1);
 }
 
-void insertPatternDyn(int pat[], int size, int type){
+void insertPatternDyn(int pat[], int size, int type, int smallType){
 	if(size == 3){
 		for(int i = 0; i < size*size; ++i){
 			pattern_3[totalPattern3][i] = pat[i];
 		}pattern_3[totalPattern3][size*size] = type;
+		pattern_3[totalPattern3][size*size+1] = smallType;
 		totalPattern3++;
 	}
 	if(size == 5){
 		for(int i = 0; i < size*size; ++i){
 			pattern_5[totalPattern5][i] = pat[i];
 		}pattern_5[totalPattern5][size*size] = type;
+		pattern_5[totalPattern5][size*size+1] = smallType;
 		totalPattern5++;
 	}
 	if(size == 7){
 		for(int i = 0; i < size*size; ++i){
 			pattern_7[totalPattern7][i] = pat[i];
 		}pattern_7[totalPattern7][size*size] = type;
+		pattern_7[totalPattern7][size*size+1] = smallType;
 		totalPattern7++;
 	}
 }
@@ -119,6 +122,7 @@ bool samePattern(int x[], int existed[], int size, typeTrans &tt){
 					}
 					if(flag){
 						tt.pat = existed[size*size];
+						tt.smallType = existed[size*size+1];
 						return true;
 					}
 					symmetryYDyn(x, size);
