@@ -1,8 +1,13 @@
 #include "pattern_dyn.h"
+#include "board.h"
 #include <iostream>
 #include <bitset>
 
-int pattern[MAXPATTERN][MAXDIAMETER*MAXDIAMETER+1];
+using namespace std;
+
+int pattern3[MAXPATTERN][10];
+int pattern5[MAXPATTERN][26];
+int pattern7[MAXPATTERN][50];
 
 void exchangeDyn(int orig[], int size){
 	for(int i = 0; i < size*size; ++i){
@@ -18,7 +23,7 @@ void clockwiseDyn(int orig[], int size){
 	int res[MAXDIAMETER*MAXDIAMETER];
 	for(int i = 0; i < size; ++i){
 		for(int j = 0; j < size; ++j){
-			res[i*size+j] = orig[j*size+(size-1-i)];
+			res[i*size+(size-1-j)] = orig[j*size+i];
 		}
 	}
 	for(int i = 0; i < size*size; ++i){
@@ -50,10 +55,31 @@ void symmetryYDyn(int orig[], int size){
 	}
 }
 
+void insertPatternDyn(int pat[], int size, int type){
+	if(size == 3){
+		for(int i = 0; i < size*size; ++i){
+			pattern3[totalPattern3][i] = pat[i];
+		}pattern3[totalPattern3][size*size] = type;
+		totalPattern3++;
+	}
+	if(size == 5){
+		for(int i = 0; i < size*size; ++i){
+			pattern5[totalPattern5][i] = pat[i];
+		}pattern5[totalPattern5][size*size] = type;
+		totalPattern5++;
+	}
+	if(size == 7){
+		for(int i = 0; i < size*size; ++i){
+			pattern7[totalPattern7][i] = pat[i];
+		}pattern7[totalPattern7][size*size] = type;
+		totalPattern7++;
+	}
+}
 
 bool equalStoneType(int x, int pat){// x:0-3; pat:0-6
 	if(x == pat) return true;
 	if(pat == arbitrary || x == arbitrary) return true;
+
 	if(pat == notWhite) return (x != white);
 	if(pat == notBlack) return (x != black);
 
@@ -104,14 +130,76 @@ int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, t
 					++tmp;
 				}
 			}
-			for(int k = 0; k < totalPattern; ++k){
-				if(samePattern(patx,pattern[k],size,tt[length])){
-					tt[length].x = centerx;
-					tt[length].y = centery;
-					length++; break;
+			patx[(size*size-1)/2] = color;
+			if(size == 3){
+				for(int k = 0; k < totalPattern3; ++k){
+					if(samePattern(patx,pattern3[k],size,tt[length])){
+						tt[length].x = centerx;
+						tt[length].y = centery;
+						length++; break;
+					}
+				}
+			}
+			if(size == 5){
+				for(int k = 0; k < totalPattern5; ++k){
+					if(samePattern(patx,pattern5[k],size,tt[length])){
+						tt[length].x = centerx;
+						tt[length].y = centery;
+						length++; break;
+					}
+				}
+			}
+			if(size == 7){
+				for(int k = 0; k < totalPattern7; ++k){
+					if(samePattern(patx,pattern7[k],size,tt[length])){
+						tt[length].x = centerx;
+						tt[length].y = centery;
+						length++; break;
+					}
 				}
 			}
 		}
 	}
 	return length;
 }
+
+void printPatternDyn(int pat[], int size){
+	printf("patternDyn:\n");
+	for(int i = 0; i < size; ++i){
+		for(int j = 0; j < size; ++j){
+			int p = pat[i*size+j];
+			if(p == 0) printf("+");
+			if(p == white) printf("0");
+			if(p == black) printf("X");
+			if(p == border) printf("=");
+			if(p == notWhite) printf("B");
+			if(p == notBlack) printf("W");
+			if(p == arbitrary) printf("A");
+		}printf("\n");
+	}printf("\n");
+}
+/*
+int main(){
+    int p[50],q[50];
+	typeTrans tt;
+	int size = 3;
+	for(int i = 0; i < 50; ++i){
+		p[i] = 0; q[i] = 0;
+	}
+	p[0] = arbitrary; p[3] = black; p[5] = white; p[8] = black;
+	p[9] = hane;
+	//p[13] = arbitrary; p[20] = notBlack;
+	//p[28] = black; p[42] = notBlack;
+	q[0] = white; q[3] = black; q[5] = white; q[8] = black;
+	printPatternDyn(q,size);
+	printPatternDyn(p,size);
+	exchangeDyn(p,size);
+	symmetryXDyn(p,size);
+	symmetryYDyn(p,size);
+	clockwiseDyn(p,size);
+	printPatternDyn(p,size);
+	if(samePattern(q,p,size,tt)) printTrans(tt);
+
+	system("pause");
+}
+*/

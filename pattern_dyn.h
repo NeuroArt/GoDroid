@@ -8,19 +8,16 @@
 #include "board.h"
 
 #define MAXDIAMETER 7
-#define MAXPATTERN 100
+#define MAXPATTERN 30
 
 using namespace std;
 
-static int totalPattern = 0;
-
+static int totalPattern3 = 0;
+static int totalPattern5 = 0;
+static int totalPattern7 = 0;
 
 enum stoneType{ //type of stones in pattern
-	empty = 0,
-	white,
-	black,
-	border,
-	notWhite,
+	notWhite=4,
 	notBlack,
 	arbitrary
 };
@@ -49,11 +46,21 @@ void clockwiseDyn(int orig[], int size);
 void symmetryXDyn(int orig[], int size);
 void symmetryYDyn(int orig[], int size);
 
+void initPatternDyn();
+
+void insertPatternDyn(int pat[], int size, int type);
+
 bool samePattern(int x[], int existed[], int size, typeTrans *tt); 
 //if is the same pattern, it will modify the type of x
 
 bool equalStoneType(int x, int pat);
 
 int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, typeTrans tt[]);
+
+void printPatternDyn(int pat[], int size);
+void printPatternTypeDyn(int pat[], int size){printf("pattern type: %d\n",pat[size*size]);}
+void printTrans(typeTrans tt){
+	printf("pat: %d;\ntransx: %d; transy: %d;\nex: %d; clock:%d;\n",tt.pat,tt.transx,tt.transy,tt.ex,tt.clock);
+}
 
 #endif
