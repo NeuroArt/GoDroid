@@ -5,9 +5,13 @@
 
 using namespace std;
 
-int pattern3[MAXPATTERN][10];
-int pattern5[MAXPATTERN][26];
-int pattern7[MAXPATTERN][50];
+int pattern_3[MAXPATTERN][10];
+int pattern_5[MAXPATTERN][26];
+int pattern_7[MAXPATTERN][50];
+
+bool validCoord(int centerx, int centery){//center:1-13
+	return ((centerx>=0) && (centery>=0) && (centerx<=14) && (centery<=14));
+}
 
 void exchangeDyn(int orig[], int size){
 	for(int i = 0; i < size*size; ++i){
@@ -55,23 +59,36 @@ void symmetryYDyn(int orig[], int size){
 	}
 }
 
+void initPatternDyn(){
+	int pattern0[9] = {2,1,2,0,6,0,6,6,6};
+    int pattern1[9] = {2,1,6,2,6,0,6,0,6};
+    int pattern2[9] = {2,1,0,0,6,0,6,0,6};
+    int pattern3[9] = {2,1,1,0,black,0,6,0,6};
+	insertPatternDyn(pattern0, 3, hane);
+	insertPatternDyn(pattern1, 3, hane);
+	insertPatternDyn(pattern2, 3, hane);
+	insertPatternDyn(pattern3, 3, hane);
+	int pattern4[9] = {arbitrary,black,arbitrary,white,arbitrary,white,notWhite,notWhite,notWhite};
+	insertPatternDyn(pattern4, 3, cut2);
+}
+
 void insertPatternDyn(int pat[], int size, int type){
 	if(size == 3){
 		for(int i = 0; i < size*size; ++i){
-			pattern3[totalPattern3][i] = pat[i];
-		}pattern3[totalPattern3][size*size] = type;
+			pattern_3[totalPattern3][i] = pat[i];
+		}pattern_3[totalPattern3][size*size] = type;
 		totalPattern3++;
 	}
 	if(size == 5){
 		for(int i = 0; i < size*size; ++i){
-			pattern5[totalPattern5][i] = pat[i];
-		}pattern5[totalPattern5][size*size] = type;
+			pattern_5[totalPattern5][i] = pat[i];
+		}pattern_5[totalPattern5][size*size] = type;
 		totalPattern5++;
 	}
 	if(size == 7){
 		for(int i = 0; i < size*size; ++i){
-			pattern7[totalPattern7][i] = pat[i];
-		}pattern7[totalPattern7][size*size] = type;
+			pattern_7[totalPattern7][i] = pat[i];
+		}pattern_7[totalPattern7][size*size] = type;
 		totalPattern7++;
 	}
 }
@@ -125,15 +142,17 @@ int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, t
 			int tmp = 0;
 			int centerx = x+i; int centery = y+j;
 			for(int k = -sizer; k <= sizer; ++k){
-				for(int l = sizer; l <= sizer; ++l){
-					patx[tmp] = brd->get_cell(centerx+k, centery+l);
+				for(int l = -sizer; l <= sizer; ++l){
+					if(!validCoord(centerx+k, centery+l)) patx[tmp] = border;
+					else patx[tmp] = brd->get_cell(centerx+k, centery+l);
 					++tmp;
 				}
 			}
 			patx[(size*size-1)/2] = color;
+			//printPatternDyn(patx, 3);
 			if(size == 3){
 				for(int k = 0; k < totalPattern3; ++k){
-					if(samePattern(patx,pattern3[k],size,tt[length])){
+					if(samePattern(patx,pattern_3[k],size,tt[length])){
 						tt[length].x = centerx;
 						tt[length].y = centery;
 						length++; break;
@@ -142,7 +161,7 @@ int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, t
 			}
 			if(size == 5){
 				for(int k = 0; k < totalPattern5; ++k){
-					if(samePattern(patx,pattern5[k],size,tt[length])){
+					if(samePattern(patx,pattern_5[k],size,tt[length])){
 						tt[length].x = centerx;
 						tt[length].y = centery;
 						length++; break;
@@ -151,7 +170,7 @@ int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, t
 			}
 			if(size == 7){
 				for(int k = 0; k < totalPattern7; ++k){
-					if(samePattern(patx,pattern7[k],size,tt[length])){
+					if(samePattern(patx,pattern_7[k],size,tt[length])){
 						tt[length].x = centerx;
 						tt[length].y = centery;
 						length++; break;
@@ -178,6 +197,16 @@ void printPatternDyn(int pat[], int size){
 		}printf("\n");
 	}printf("\n");
 }
+
+void printPatternTypeDyn(int pat[], int size){
+	printf("pattern type: %d\n",pat[size*size]);
+}
+
+void printTrans(typeTrans tt){
+	printf("\npat: %d;\ntransx: %d; transy: %d;\nex: %d; clock:%d;\n",tt.pat,tt.transx,tt.transy,tt.ex,tt.clock);
+	printf("x: %d; y: %d;\n",tt.x, tt.y);
+}
+
 /*
 int main(){
     int p[50],q[50];

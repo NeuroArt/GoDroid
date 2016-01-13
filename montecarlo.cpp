@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #include "pattern.h"
+#include "pattern_dyn.h"
 
 using namespace std;
 
@@ -65,8 +66,15 @@ void montecarlo::run() {
 				}
 		}
 		while (triedtimes <= 300 && !walked && last != 0){
-			patmove = findPattern(&currentBoard, player, (last - 1) / BOARDSIZE + 1, (last - 1) % BOARDSIZE + 1);
+			/*pattern_dyn用法是这个样子的：
+			typeTrans tt[10];
+			int cnt = matchPatternDyn(&currentBoard, player, (last-1)/BOARDSIZE+1, (last-1)%BOARDSIZE+1, 3, 3, tt);
+			if(cnt > 0) printf("dynamic hit\n");
+			for(int i = 0; i < cnt; ++i) printTrans(tt[i]);
+			*/
+			patmove = findPattern(&currentBoard, player, (last-1)/BOARDSIZE+1, (last-1)%BOARDSIZE+1);
 			if (patmove){
+				//printf("pattern hit\n");
 				triedtimes++;
 				int coordX = (patmove - 1) / BOARDSIZE + 1;
 				int coordY = (patmove - 1) % BOARDSIZE + 1;
@@ -101,7 +109,6 @@ void montecarlo::run() {
 			triedtimes++;
 			iter = validsetalley->begin();
 			int randomNumber = rand() % validsetalley->size();
-			//printf("%dhere",randomNumber);
 			for (int i = 0; i < randomNumber; i++)
 				iter++;
 			int coordX = (*iter - 1) / BOARDSIZE + 1;
@@ -124,25 +131,25 @@ void montecarlo::run() {
 		if (validsetalley->empty() && validsetenemy->empty() && ataripositionalley->empty() && ataripositionenemy->empty()){
 			flag = false;
 		}
-		//currentBoard.showboard();
-		//printf("%d\n", last);
-		//system("pause");
-		// 		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
-		// 			printf("%d ",*iter);
-		// 		printf("\n");
-		// 		for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++)
-		// 			printf("%d ",*iter);
-		// 		printf("\n");
-		// 		for (iter=validsetalley->begin();iter!=validsetalley->end();iter++)
-		// 			printf("%d ",*iter);
-		// 		printf("\n");
-		// 		for (iter=validsetenemy->begin();iter!=validsetenemy->end();iter++)
-		// 			printf("%d ",*iter);
-		// 		printf("\n");
+		/*currentBoard.showboard();
+		printf("%d\n", last);
+		system("pause");
+		for (iter=ataripositionalley->begin();iter!=ataripositionalley->end();iter++)
+		 	printf("%d ",*iter);
+		printf("\n");
+		for (iter=ataripositionenemy->begin();iter!=ataripositionenemy->end();iter++)
+		 	printf("%d ",*iter);
+		printf("\n");
+		for (iter=validsetalley->begin();iter!=validsetalley->end();iter++)
+		 	printf("%d ",*iter);
+		printf("\n");
+		for (iter=validsetenemy->begin();iter!=validsetenemy->end();iter++)
+		 	printf("%d ",*iter);
+		printf("\n");*/
 	}
-	//currentBoard.showboard();
-	//system("pause");
-	//printf("\n");
+	/*currentBoard.showboard();
+	system("pause");
+	printf("\n");*/
 	winner = currentBoard.judge()>0?1:0;
 }
 

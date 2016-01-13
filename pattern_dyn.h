@@ -1,5 +1,6 @@
 #ifndef _PATTERN_DYN_
 #define _PATTERN_DYN_
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,9 +38,8 @@ struct typeTrans{
 	int clock;
 };
 
-bool onBoard(int centerx, int centery){//center:1-13
-	return ((centerx>=0) && (centery>=0) && (centerx<=14) && (centery<=14));
-}
+bool validCoord(int centerx, int centery);
+
 //4 types of transformations, size:3-5
 void exchangeDyn(int orig[], int size);
 void clockwiseDyn(int orig[], int size);
@@ -61,9 +61,7 @@ int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, t
 //Î´²âÊÔ
 
 void printPatternDyn(int pat[], int size);
-void printPatternTypeDyn(int pat[], int size){printf("pattern type: %d\n",pat[size*size]);}
-void printTrans(typeTrans tt){
-	printf("pat: %d;\ntransx: %d; transy: %d;\nex: %d; clock:%d;\n",tt.pat,tt.transx,tt.transy,tt.ex,tt.clock);
-}
+void printPatternTypeDyn(int pat[], int size);
+void printTrans(typeTrans tt);
 
 #endif
