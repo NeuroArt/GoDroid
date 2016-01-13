@@ -59,7 +59,7 @@ unsigned short exchange(unsigned short orig){
 }
 
 //对short表示的pattern做对称操作，沿竖直轴对称
-unsigned short symmetryX(unsigned short orig){
+unsigned short symmetryY(unsigned short orig){
     int trans[8] = {2,1,0,4,3,7,6,5};
     unsigned short res = 0;
     for(int i = 0; i < 8; ++i)
@@ -68,7 +68,7 @@ unsigned short symmetryX(unsigned short orig){
 }
 
 //对short表示的pattern做对称操作，沿水平轴对称
-unsigned short symmetryY(unsigned short orig){
+unsigned short symmetryX(unsigned short orig){
     int trans[8] = {5,6,7,3,4,0,1,2};
     unsigned short res = 0;
     for(int i = 0; i < 8; ++i)
