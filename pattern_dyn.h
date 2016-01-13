@@ -46,16 +46,19 @@ void clockwiseDyn(int orig[], int size);
 void symmetryXDyn(int orig[], int size);
 void symmetryYDyn(int orig[], int size);
 
-void initPatternDyn();
+void initPatternDyn(); // 待实现，需要手动建立
 
-void insertPatternDyn(int pat[], int size, int type);
+void insertPatternDyn(int pat[], int size, int type); 
+// 手动建立pattern的时候使用这个函数，pat为size*size
 
 bool samePattern(int x[], int existed[], int size, typeTrans *tt); 
-//if is the same pattern, it will modify the type of x
+//if is the same pattern, it will modify tt
 
 bool equalStoneType(int x, int pat);
+//需要检查逻辑是否正确，现在：任意、非黑、非白均可以匹配border
 
 int matchPatternDyn(board *brd, int color, int x, int y, int size, int radius, typeTrans tt[]);
+//未测试
 
 void printPatternDyn(int pat[], int size);
 void printPatternTypeDyn(int pat[], int size){printf("pattern type: %d\n",pat[size*size]);}
